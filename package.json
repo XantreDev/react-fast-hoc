@@ -13,5 +13,5 @@
     "turbo": "latest"
   },
   "packageManager": "pnpm@7.15.0",
-  "name": "react-fast-hoc"
+  "name": "react-fast-hoc-monorepo"
 }

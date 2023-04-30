@@ -1,0 +1,23 @@
+{
+  "name": "react-fast-hoc",
+  "license": "MIT",
+  "version": "0.0.0-alpha",
+  "author": {
+    "email": "valerik007.vs@gmail.com",
+    "name": "Valerii Smirnov",
+    "url": "https://github.com/XantreGodlike"
+  },
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "jsdom": "^21.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "type-fest": "^3.9.0",
+    "vitest": "^0.30.1"
+  }
+}
