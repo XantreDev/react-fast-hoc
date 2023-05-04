@@ -1,5 +1,7 @@
 import { cleanup, render } from "@testing-library/react";
+import { Objects } from "hotscript";
 import React, { createElement, forwardRef, memo } from "react";
+import { Function } from "ts-toolbelt";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { transformProps } from ".";
 
@@ -8,6 +10,8 @@ const identityProps = <T>(props: T) => props;
 afterEach(() => {
   cleanup();
 });
+
+// TODO: remove ts-expect-error
 
 describe("transforms component to needed type", () => {
   class ClassComponent extends React.Component {
@@ -21,6 +25,7 @@ describe("transforms component to needed type", () => {
   });
   test("transforms class component to function component", () => {
     console.log(transformProps(identityProps)(ClassComponent));
+    // @ts-expect-error internal property
     expect(transformProps(identityProps)(ClassComponent).render).toBeTypeOf(
       "function"
     );
@@ -35,7 +40,7 @@ describe("transformProps", () => {
         bebe: true,
       } as const)
   );
-  const addBebeHoc = transformProps(addBebeProp);
+  const addBebeHoc = transformProps<[Objects.Omit<"bebe">]>(addBebeProp as any);
   const Component = vi.fn(() => null);
   const propsDetector = vi.fn((props: unknown) => null);
 
@@ -56,6 +61,8 @@ describe("transformProps", () => {
     }
   }
 
+  const n = <T extends Function>(data: Function.Narrow<T>) => data;
+
   const standardCheck = () => {
     expect(Component).toHaveBeenCalledOnce();
     expect(addBebeProp).toHaveBeenCalledOnce();
@@ -72,6 +79,7 @@ describe("transformProps", () => {
       typeof ClassComponent,
       ClassComponent.prototype instanceof React.Component
     );
+
     render(createElement(addBebeHoc(ClassComponent)));
 
     expect(addBebeProp).toHaveBeenCalledOnce();
@@ -95,7 +103,9 @@ describe("transformProps", () => {
     expect(Component).toHaveBeenCalledWith({ bebe: true }, {});
   });
 
+  // this
   test("works with forwardRef after hoc", () => {
+    // @ts-expect-error Has no ref
     render(createElement(forwardRef(addBebeHoc(Component))));
 
     expect(Component).toHaveBeenCalled();

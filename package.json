@@ -4,13 +4,15 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",
-    "prettier": "^2.5.1",
-    "turbo": "latest"
+    "prettier": "^2.8.1",
+    "turbo": "latest",
+    "typescript": "^5.0.4"
   },
   "packageManager": "pnpm@7.15.0",
   "name": "react-fast-hoc-monorepo"

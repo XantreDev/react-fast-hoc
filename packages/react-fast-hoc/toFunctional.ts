@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import { createElement, forwardRef, Component as ReactComponent } from "react";
+import { Component as ReactComponent, createElement, forwardRef } from "react";
 
 export const TRANSFORMED_TO_FUNCTIONAL_STORE_KEY = Symbol.for(
   "react__transformed_to_functional"
@@ -48,5 +48,5 @@ const isPrototypeOf = Function.call.bind(Object.prototype.isPrototypeOf) as (
 
 export const isClassComponent = <T>(
   Component: T
-): Component is Extract<T, ReactComponent<any, any, any>> =>
+): Component is Extract<T, React.ComponentClass<any, any>> =>
   isPrototypeOf(ReactComponent, Component);

@@ -36,12 +36,11 @@ export class HocTransformer implements ProxyHandler<Function> {
 export const wrapPropsTransformer =
   <T extends object, R extends object>(transformer: (arg: T) => R) =>
   (args: [Omit<T, "ref">, Get<T, "ref">]) => {
-    let [props, ref] = args;
+    let [_props, ref] = args;
+    // props are immutable, because of should stable while rerenders,
+    // so wrapping it into props transform hoc has overhead
+    const props = Object.assign(Object.create(null), _props);
 
-    // React freezes props in development mode
-    if (process.env.NODE_ENV !== "production") {
-      props = Object.assign(Object.create(null), props);
-    }
     const isRealRef =
       ref === null ||
       typeof ref === "function" ||
@@ -53,7 +52,7 @@ export const wrapPropsTransformer =
     type RealProps = T & { ref: Get<T, "ref"> };
 
     const resultProps = transformer(props as RealProps);
-    const resultRef = isRealRef && resultProps["ref"];
+    const resultRef = isRealRef && "ref" in resultProps && resultProps["ref"];
     if (isRealRef) {
       delete (resultProps as R & { ref?: unknown }).ref;
     }
@@ -74,7 +73,7 @@ type RealComponentType<TProps extends object, IRef = unknown> =
       compare: null | ((a: TProps, b: TProps) => boolean);
       type: (props: TProps) => ReactNode;
     }
-  | React.Component<TProps>
+  | React.ComponentClass<TProps>
   | React.FC<TProps>;
 
 type ReactFunctionalComponentType<
@@ -97,7 +96,10 @@ const wrapFunctionalFROrDefault = <TProps extends object>(
     ReactFunctionalComponentType<TProps>,
     ForwardRefComponent
   >;
-  if (Component["$$typeof"] === REACT_FORWARD_REF_TYPE) {
+  if (
+    "$$typeof" in Component &&
+    Component["$$typeof"] === REACT_FORWARD_REF_TYPE
+  ) {
     return {
       $$typeof: REACT_FORWARD_REF_TYPE,
       render: new Proxy((Component as ForwardRefComponent).render, handler),
@@ -115,29 +117,31 @@ export const wrapComponentIntoHoc = <TProps extends object>(
 ) => {
   // this case assumes that it's ClassComponent
   if (isClassComponent(Component)) {
-    // @ts-expect-error
-    return wrapFunctionalFROrDefault(toFunctional(Component), handler);
+    return wrapFunctionalFROrDefault(
+      toFunctional(Component) as React.FC<TProps>,
+      handler
+    );
   }
 
-  if (Component["$$typeof"] === REACT_MEMO_TYPE) {
+  if ("$$typeof" in Component && Component["$$typeof"] === REACT_MEMO_TYPE) {
     return {
       $$typeof: REACT_MEMO_TYPE,
       // @ts-expect-error
       type: wrapFunctionalFROrDefault(toFunctional(Component.type), handler),
-      // @ts-expect-error
       compare: Component.compare,
     };
   }
 
-  if (Component["$$typeof"] === REACT_FORWARD_REF_TYPE) {
+  if (
+    "$$typeof" in Component &&
+    Component["$$typeof"] === REACT_FORWARD_REF_TYPE
+  ) {
     return {
       $$typeof: REACT_FORWARD_REF_TYPE,
       // render is always function
-      // @ts-expect-error
       render: new Proxy(Component.render, handler),
     };
   }
 
-  // @ts-expect-error
   return new Proxy(Component, handler);
 };

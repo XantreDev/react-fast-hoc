@@ -8,7 +8,8 @@
     "url": "https://github.com/XantreGodlike"
   },
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "test:types": "tsc --noEmit --diagnostics"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
@@ -18,6 +19,14 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "type-fest": "^3.9.0",
-    "vitest": "^0.30.1"
+    "vitest": "^0.30.1",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*"
+  },
+  "peerDependencies": {
+    "hotscript": "^1.0.11"
+  },
+  "dependencies": {
+    "ts-toolbelt": "^9.6.0"
   }
 }
