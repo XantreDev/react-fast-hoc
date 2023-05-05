@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: "pnpm"
-          node-version: "lts"
+          node-version: latest
       - uses: pnpm/action-setup@v2
         with:
           version: latest
