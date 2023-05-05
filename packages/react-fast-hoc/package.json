@@ -1,7 +1,7 @@
 {
   "name": "react-fast-hoc",
   "license": "MIT",
-  "version": "0.0.0-alpha3",
+  "version": "0.0.0-alpha4",
   "sideEffects": false,
   "repository": {
     "type": "git",
@@ -22,10 +22,12 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "test": "vitest",
-    "test:types": "tsc --noEmit --diagnostics",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "typecheck": "tsc --noEmit --diagnostics",
+    "lint": "pnpm typecheck",
     "build": "nanobundle clean && nanobundle build --verbose",
-    "publish": "pnpm publish"
+    "release": "pnpm publish"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",

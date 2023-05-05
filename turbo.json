@@ -5,15 +5,15 @@
     "build": {
       "outputs": ["lib/**"]
     },
-    "lint": {},
+    "lint": {
+      "dependsOn": ["test"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "test": {
-      "persistent": true
-    },
-    "publish": {
+    "test": {},
+    "release": {
       "dependsOn": ["build"]
     }
   }

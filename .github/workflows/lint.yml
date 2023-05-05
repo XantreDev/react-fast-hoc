@@ -1,0 +1,23 @@
+# run-name: Test packages
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    name: Lint x Test react-fast-hoc package
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: "pnpm"
+          node-version: "lts"
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+      - run: pnpm i
+      - run: pnpm lint
