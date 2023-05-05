@@ -1,7 +1,7 @@
 {
   "name": "react-fast-hoc",
   "license": "MIT",
-  "version": "0.0.0-alpha2",
+  "version": "0.0.0-alpha3",
   "sideEffects": false,
   "repository": {
     "type": "git",
