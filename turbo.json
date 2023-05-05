@@ -12,6 +12,9 @@
     },
     "test": {
       "persistent": true
+    },
+    "publish": {
+      "dependsOn": ["build"]
     }
   }
 }

@@ -1,8 +1,12 @@
 {
   "name": "react-fast-hoc",
   "license": "MIT",
-  "version": "0.0.0-alpha1",
+  "version": "0.0.0-alpha2",
   "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XantreGodlike/react-fast-hoc.git"
+  },
   "author": {
     "email": "valerik007.vs@gmail.com",
     "name": "Valerii Smirnov",
@@ -20,7 +24,8 @@
   "scripts": {
     "test": "vitest",
     "test:types": "tsc --noEmit --diagnostics",
-    "build": "nanobundle build"
+    "build": "nanobundle build",
+    "publish": "na publish"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
