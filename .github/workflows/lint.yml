@@ -15,9 +15,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: "pnpm"
-          node-version: latest
+          node-version: lts
       - uses: pnpm/action-setup@v2
         with:
           version: latest
-      - run: pnpm i
+          run_install: true
       - run: pnpm lint
