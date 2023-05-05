@@ -27,7 +27,7 @@ yarn add react-fast-hoc && yarn add -D hotscript
 pnpm i react-fast-hoc && pnpm i -D hotscript
 ```
 
-Or with (ni)[https://www.npmjs.com/package/@antfu/ni]:
+Or with [ni](https://www.npmjs.com/package/@antfu/ni):
 
 ```sh
 ni react-fast-hoc && ni -D hotscript
