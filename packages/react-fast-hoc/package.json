@@ -1,7 +1,7 @@
 {
   "name": "react-fast-hoc",
   "license": "MIT",
-  "version": "0.0.0-alpha4",
+  "version": "0.0.1",
   "sideEffects": false,
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "typecheck": "tsc --noEmit --diagnostics",
     "lint": "pnpm typecheck",
     "build": "nanobundle clean && nanobundle build --verbose",
-    "release": "pnpm publish"
+    "release": "changeset publish"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
