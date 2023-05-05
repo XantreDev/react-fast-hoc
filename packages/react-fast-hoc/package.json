@@ -24,7 +24,7 @@
   "scripts": {
     "test": "vitest",
     "test:types": "tsc --noEmit --diagnostics",
-    "build": "nanobundle build",
+    "build": "nanobundle clean && nanobundle build --verbose",
     "publish": "na publish"
   },
   "devDependencies": {
@@ -38,10 +38,12 @@
     "react-dom": "^18.2.0",
     "tsconfig": "workspace:*",
     "type-fest": "^3.9.0",
-    "vitest": "^0.30.1"
+    "vitest": "^0.30.1",
+    "rimraf": "latest"
   },
   "peerDependencies": {
-    "hotscript": "^1.0.11"
+    "hotscript": "^1.0.11",
+    "react": ">=17"
   },
   "dependencies": {
     "ts-toolbelt": "^9.6.0"
