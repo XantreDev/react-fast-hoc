@@ -25,7 +25,8 @@
     "test": "vitest",
     "test:types": "tsc --noEmit --diagnostics",
     "build": "nanobundle clean && nanobundle build --verbose",
-    "publish": "na publish"
+    "prepublishOnly": "copy ../../README.md README.md",
+    "publish": "pnpm publish"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
