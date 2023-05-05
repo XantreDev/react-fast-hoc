@@ -25,7 +25,6 @@
     "test": "vitest",
     "test:types": "tsc --noEmit --diagnostics",
     "build": "nanobundle clean && nanobundle build --verbose",
-    "prepublishOnly": "copy ../../README.md README.md",
     "publish": "pnpm publish"
   },
   "devDependencies": {
