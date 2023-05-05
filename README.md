@@ -1,0 +1,1 @@
+./packages/react-fast-hoc/README.md
