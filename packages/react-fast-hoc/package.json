@@ -2,6 +2,7 @@
   "name": "react-fast-hoc",
   "license": "MIT",
   "version": "0.0.0-alpha1",
+  "sideEffects": false,
   "author": {
     "email": "valerik007.vs@gmail.com",
     "name": "Valerii Smirnov",
