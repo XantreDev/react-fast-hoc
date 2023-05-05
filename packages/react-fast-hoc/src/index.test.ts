@@ -3,7 +3,7 @@ import { Objects } from "hotscript";
 import React, { createElement, forwardRef, memo } from "react";
 import { Function } from "ts-toolbelt";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { transformProps } from ".";
+import { createTransformProps } from ".";
 
 const identityProps = <T>(props: T) => props;
 
@@ -21,12 +21,12 @@ describe("transforms component to needed type", () => {
   }
 
   test("works correct with FC", () => {
-    expect(transformProps(identityProps)(() => null)).toBeTypeOf("function");
+    expect(createTransformProps(identityProps)(() => null)).toBeTypeOf("function");
   });
   test("transforms class component to function component", () => {
-    console.log(transformProps(identityProps)(ClassComponent));
+    console.log(createTransformProps(identityProps)(ClassComponent));
     // @ts-expect-error internal property
-    expect(transformProps(identityProps)(ClassComponent).render).toBeTypeOf(
+    expect(createTransformProps(identityProps)(ClassComponent).render).toBeTypeOf(
       "function"
     );
   });
@@ -40,7 +40,7 @@ describe("transformProps", () => {
         bebe: true,
       } as const)
   );
-  const addBebeHoc = transformProps<[Objects.Omit<"bebe">]>(addBebeProp as any);
+  const addBebeHoc = createTransformProps<[Objects.Omit<"bebe">]>(addBebeProp as any);
   const Component = vi.fn(() => null);
   const propsDetector = vi.fn((props: unknown) => null);
 

@@ -7,21 +7,32 @@
     "name": "Valerii Smirnov",
     "url": "https://github.com/XantreGodlike"
   },
+  "main": "./lib/index.js",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "require": "./lib/index.js",
+      "import": "./lib/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "test": "vitest",
-    "test:types": "tsc --noEmit --diagnostics"
+    "test:types": "tsc --noEmit --diagnostics",
+    "build": "nanobundle build"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "eslint-config-custom": "workspace:*",
     "jsdom": "^21.1.1",
+    "nanobundle": "^1.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tsconfig": "workspace:*",
     "type-fest": "^3.9.0",
-    "vitest": "^0.30.1",
-    "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*"
+    "vitest": "^0.30.1"
   },
   "peerDependencies": {
     "hotscript": "^1.0.11"

@@ -1,9 +1,6 @@
 import type { ComponentType } from "react";
 import { Component as ReactComponent, createElement, forwardRef } from "react";
 
-export const TRANSFORMED_TO_FUNCTIONAL_STORE_KEY = Symbol.for(
-  "react__transformed_to_functional"
-);
 export const FC_STORE = new WeakMap<object, Function>();
 
 export type Get<TObject, IName> = IName extends keyof TObject
