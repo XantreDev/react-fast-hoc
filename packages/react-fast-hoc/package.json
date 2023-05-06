@@ -3,6 +3,9 @@
   "license": "MIT",
   "version": "0.0.2",
   "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/XantreGodlike/react-fast-hoc.git"
