@@ -1,4 +1,4 @@
-name: ReleasePR
+name: Release
 
 on:
   push:

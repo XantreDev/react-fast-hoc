@@ -1,4 +1,4 @@
-# run-name: Test packages
+name: Lint
 on:
   push:
     branches:
