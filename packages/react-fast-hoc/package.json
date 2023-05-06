@@ -26,8 +26,7 @@
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit --diagnostics",
     "lint": "pnpm typecheck",
-    "build": "nanobundle build --clean --verbose",
-    "release": "changeset publish"
+    "build": "nanobundle build --clean --verbose"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
