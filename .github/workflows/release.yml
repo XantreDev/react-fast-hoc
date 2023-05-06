@@ -24,8 +24,9 @@ jobs:
         with:
           node-version: latest
 
-      - name: Install packages
+      - name: Install Dependencies
         run: pnpm i
+    
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
