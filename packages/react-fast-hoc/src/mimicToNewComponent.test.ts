@@ -1,26 +1,29 @@
-import { assert, beforeEach, describe, expect, test } from 'vitest'
-import { transformProps } from '.'
+import { assert, beforeEach, describe, expect, test } from "vitest";
+import { transformProps } from ".";
 
-const createComponent = () => () => null
+const createComponent = () => () => null;
 
-describe('mimic to new component test', () => {
-  let Component = createComponent()
+describe("mimic to new component test", () => {
+  let Component = createComponent();
   beforeEach(() => {
-    Component = createComponent()
-    Object.assign(Component, { displayName: "Component" })
-  })
+    Component = createComponent();
+    Object.assign(Component, { displayName: "Component" });
+  });
 
-  test('test addition', () => {
-    const wrappedComponent = Object.assign(transformProps(Component, (props) => props), {
-      bebe: 'da'
-    })
-    expect(wrappedComponent).toHaveProperty('bebe')
-    expect(wrappedComponent.bebe).toEqual('da')
-    assert(!('bebe' in Component))
+  test("test addition", () => {
+    const wrappedComponent = Object.assign(
+      transformProps(Component, (props) => props),
+      {
+        bebe: "da",
+      }
+    );
+    expect(wrappedComponent).toHaveProperty("bebe");
+    expect(wrappedComponent.bebe).toEqual("da");
+    assert(!("bebe" in Component));
     // @ts-expect-error
-    delete wrappedComponent.bebe
-    assert(!('bebe' in wrappedComponent))
+    delete wrappedComponent.bebe;
+    assert(!("bebe" in wrappedComponent));
     // @ts-expect-error
-    assert(wrappedComponent.bebe === undefined)
-  })
-})
+    assert(wrappedComponent.bebe === undefined);
+  });
+});

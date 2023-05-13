@@ -109,10 +109,7 @@ const wrapFunctionalFROrDefault = <TProps extends object>(
 };
 
 export class MimicToNewComponentHandler implements ProxyHandler<Function> {
-  private _componentProps = new WeakMap<
-    Function,
-    Map<PropertyKey, unknown>
-  >();
+  private _componentProps = new WeakMap<Function, Map<PropertyKey, unknown>>();
 
   get(target: Function, p: PropertyKey, receiver: any) {
     const overridenProps = this._componentProps.get(target);
@@ -158,8 +155,10 @@ export class MimicToNewComponentHandler implements ProxyHandler<Function> {
     }
     return Reflect.deleteProperty(target, p);
   }
-  has(target: Function, prop: PropertyKey){
-    return this._componentProps.get(target)?.has(prop) || Reflect.has(target, prop);
+  has(target: Function, prop: PropertyKey) {
+    return (
+      this._componentProps.get(target)?.has(prop) || Reflect.has(target, prop)
+    );
   }
 }
 // I don't know why but typescript is not helpful at all
@@ -198,6 +197,8 @@ export const wrapComponentIntoHoc = <TProps extends object>(
     };
   }
 
-  const proxied = new Proxy(Component, handler)
-  return mimicToNewComponentHandler ? new Proxy(proxied, mimicToNewComponentHandler) : proxied;
+  const proxied = new Proxy(Component, handler);
+  return mimicToNewComponentHandler
+    ? new Proxy(proxied, mimicToNewComponentHandler)
+    : proxied;
 };

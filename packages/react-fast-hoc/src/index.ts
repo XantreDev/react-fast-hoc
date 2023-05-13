@@ -93,7 +93,7 @@ export type CreateHocComponentOptions = (
     }
 ) & {
   /**
-   * @description This feature has overhead in terms of using another proxy 
+   * @description This feature has overhead in terms of using another proxy
    * to you can easilty mutate and define new properties, and not change inital component
    */
   mimicToNewComponent?: boolean;
@@ -104,11 +104,11 @@ export type CreateHocComponentOptions = (
  */
 export type CreateHocOptions = {
   /**
-   * @description you can mutate props object 
+   * @description you can mutate props object
    */
   propsTransformer: null | FastHocPropsTransformer;
   resultTransformer: null | ((jsx: ReactNode) => ReactNode);
-} & CreateHocComponentOptions
+} & CreateHocComponentOptions;
 
 /**
  * @description *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
@@ -122,7 +122,7 @@ export const createHoc = <
 >(
   params: CreateHocOptions
 ) => {
-  const {mimicToNewComponent = true} = params;
+  const { mimicToNewComponent = true } = params;
   const proxyObject = new HocTransformer(
     // @ts-expect-error
     params.propsTransformer
@@ -132,16 +132,19 @@ export const createHoc = <
     "namePrefix" in params ? params.namePrefix : null,
     "nameRewrite" in params ? params.nameRewrite : null
   );
-  const mimicToHandler = mimicToNewComponent ? new MimicToNewComponentHandler() : null;
+  const mimicToHandler = mimicToNewComponent
+    ? new MimicToNewComponentHandler()
+    : null;
 
   return ((component: ComponentType<unknown>) =>
-    wrapComponentIntoHoc(component, proxyObject, mimicToHandler)) as FastHocReturn<
-    TPipeTransform,
-    ComponentPropsExtends
-  >;
+    wrapComponentIntoHoc(
+      component,
+      proxyObject,
+      mimicToHandler
+    )) as FastHocReturn<TPipeTransform, ComponentPropsExtends>;
 };
 
-const DEFAULT_TRANSFORM_OPTIONS = { namePrefix: 'Transformed' } as const
+const DEFAULT_TRANSFORM_OPTIONS = { namePrefix: "Transformed" } as const;
 /**
  *
  * @description create a hoc that automagically applies proxy to component. *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
@@ -208,4 +211,3 @@ export const transformProps = <
     transformer,
     options
   )(Component) as unknown as TransformPropsReturn<TComponent, TNewProps>;
-

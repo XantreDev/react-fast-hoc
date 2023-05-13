@@ -21,14 +21,16 @@ describe("transforms component to needed type", () => {
   }
 
   test("works correct with FC", () => {
-    expect(createTransformProps(identityProps)(() => null)).toBeTypeOf("function");
+    expect(createTransformProps(identityProps)(() => null)).toBeTypeOf(
+      "function"
+    );
   });
   test("transforms class component to function component", () => {
     console.log(createTransformProps(identityProps)(ClassComponent));
     // @ts-expect-error internal property
-    expect(createTransformProps(identityProps)(ClassComponent).render).toBeTypeOf(
-      "function"
-    );
+    expect(
+      createTransformProps(identityProps)(ClassComponent).render
+    ).toBeTypeOf("function");
   });
 });
 
@@ -40,7 +42,9 @@ describe("transformProps", () => {
         bebe: true,
       } as const)
   );
-  const addBebeHoc = createTransformProps<[Objects.Omit<"bebe">]>(addBebeProp as any);
+  const addBebeHoc = createTransformProps<[Objects.Omit<"bebe">]>(
+    addBebeProp as any
+  );
   const Component = vi.fn(() => null);
   const propsDetector = vi.fn((props: unknown) => null);
 
