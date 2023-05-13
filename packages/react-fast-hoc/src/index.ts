@@ -80,7 +80,7 @@ export type FastHocReturn<
  * FastHocArg represents the argument object for the createHoc function. It contains
  * the props and result transformers, and options for name prefix or rewrite.
  */
-export type FastHocPropsTransformer = (
+export type PropsTransformer = (
   props: Record<string | symbol | number, unknown>
 ) => Record<string | symbol | number, unknown>;
 
@@ -106,9 +106,18 @@ export type CreateHocOptions = {
   /**
    * @description you can mutate props object
    */
-  propsTransformer: null | FastHocPropsTransformer;
+  propsTransformer: null | PropsTransformer;
   resultTransformer: null | ((jsx: ReactNode) => ReactNode);
 } & CreateHocComponentOptions;
+
+export const wrapIntoProxy =
+  (proxy: ProxyHandler<Function>) =>
+  <T extends React.ComponentType>(Component: T) =>
+    wrapComponentIntoHoc(
+      Component,
+      proxy as HocTransformer,
+      null
+    ) as FastHocComponentWrapperReturn<[], PropsBase, T>;
 
 /**
  * @description *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
@@ -163,7 +172,7 @@ export const createTransformProps = <
   TPipeTransform extends Fn[] = [],
   ComponentPropsExtends extends PropsBase = PropsBase
 >(
-  propsTransformer: FastHocPropsTransformer,
+  propsTransformer: PropsTransformer,
   options?: CreateHocComponentOptions
 ) =>
   createHoc<TPipeTransform, ComponentPropsExtends>({
