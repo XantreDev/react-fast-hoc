@@ -3,17 +3,19 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "changeset": "changeset",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
     "release": "turbo run build && changeset publish",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
-    "eslint": "^7.32.0",
+    "eslint": "^8.40.0",
     "eslint-config-custom": "workspace:*",
-    "prettier": "^2.8.1",
-    "turbo": "latest",
+    "prettier": "^2.8.8",
+    "turbo": "^1.9.4",
     "typescript": "^5.0.4"
   },
   "packageManager": "pnpm@7.15.0",

@@ -12,12 +12,17 @@ import {
 import type { HotscriptObjects } from "./hotscriptsTypes";
 import {
   HocTransformer,
+  MimicToNewComponentHandler,
   wrapComponentIntoHoc,
   wrapPropsTransformer,
 } from "./internals";
 
 type PropsBase = Record<string | number | symbol, unknown>;
 
+/**
+ * Returns a FastHocComponentWrapper with the appropriate types for the component
+ * and the transformation pipeline.
+ */
 type ChangeComponentProps<
   TComponent extends ComponentType<any>,
   TNewProps
@@ -35,6 +40,10 @@ type ChangeComponentProps<
   ? FunctionComponent<TNewProps>
   : never;
 
+/**
+ * Returns a FastHocComponentWrapper with the appropriate types for the component
+ * and the transformation pipeline.
+ */
 export type FastHocComponentWrapperReturn<
   TPipeTransform extends Fn[],
   TComponentPropsExtends extends object,
@@ -44,6 +53,10 @@ export type FastHocComponentWrapperReturn<
     : never
 > = ChangeComponentProps<TComponent, Pipe<TComputedProps, TPipeTransform>>;
 
+/**
+ * FastHocComponentWrapper is a higher-order component that wraps the input component
+ * with the provided transformation pipeline and new component props.
+ */
 export type FastHocComponentWrapper<
   TPipeTransform extends Fn[],
   TComponentPropsExtends extends object
@@ -55,32 +68,51 @@ export type FastHocComponentWrapper<
   TComponent
 >;
 
+/**
+ * FastHocReturn is a type alias for FastHocComponentWrapper.
+ */
 export type FastHocReturn<
   TPipeTransform extends Fn[],
   TComponentPropsExtends extends PropsBase = PropsBase
 > = FastHocComponentWrapper<TPipeTransform, TComponentPropsExtends>;
 
+/**
+ * FastHocArg represents the argument object for the createHoc function. It contains
+ * the props and result transformers, and options for name prefix or rewrite.
+ */
 export type FastHocPropsTransformer = (
   props: Record<string | symbol | number, unknown>
 ) => Record<string | symbol | number, unknown>;
 
-export type FastHocArg = {
-  propsTransformer: null | FastHocPropsTransformer;
-  resultTransformer: null | ((jsx: ReactNode) => ReactNode);
-} & (
+export type CreateHocComponentOptions = (
   | {
       namePrefix: string;
-      nameRewrite: null;
     }
   | {
-      namePrefix: null;
       nameRewrite: string;
     }
-);
+) & {
+  /**
+   * @description This feature has overhead in terms of using another proxy 
+   * to you can easilty mutate and define new properties, and not change inital component
+   */
+  mimicToNewComponent?: boolean;
+};
+/**
+ * FastHocArg represents the argument object for the createHoc function. It contains
+ * the props and result transformers, and options for name prefix or rewrite.
+ */
+export type CreateHocOptions = {
+  /**
+   * @description you can mutate props object 
+   */
+  propsTransformer: null | FastHocPropsTransformer;
+  resultTransformer: null | ((jsx: ReactNode) => ReactNode);
+} & CreateHocComponentOptions
 
 /**
- *
- * @param propsTransformer props transformer not typesafe for now
+ * @description *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
+ * @param propsTransformer You can use react hooks in the transformer function.
  * @param displayNamePrefix
  * @returns
  */
@@ -88,8 +120,9 @@ export const createHoc = <
   TPipeTransform extends Fn[],
   ComponentPropsExtends extends PropsBase = PropsBase
 >(
-  params: FastHocArg
+  params: CreateHocOptions
 ) => {
+  const {mimicToNewComponent = true} = params;
   const proxyObject = new HocTransformer(
     // @ts-expect-error
     params.propsTransformer
@@ -99,18 +132,28 @@ export const createHoc = <
     "namePrefix" in params ? params.namePrefix : null,
     "nameRewrite" in params ? params.nameRewrite : null
   );
+  const mimicToHandler = mimicToNewComponent ? new MimicToNewComponentHandler() : null;
 
   return ((component: ComponentType<unknown>) =>
-    wrapComponentIntoHoc(component, proxyObject)) as FastHocReturn<
+    wrapComponentIntoHoc(component, proxyObject, mimicToHandler)) as FastHocReturn<
     TPipeTransform,
     ComponentPropsExtends
   >;
 };
 
+const DEFAULT_TRANSFORM_OPTIONS = { namePrefix: 'Transformed' } as const
 /**
  *
- * @param propsTransformer props transformer not typesafe for now
- * @param displayNamePrefix
+ * @description create a hoc that automagically applies proxy to component. *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
+ * @example
+ * ```tsx
+ * const withProps = createTransformProps<[], { newProp: string }>((props) => ({
+ *  ...props,
+ *  newProp: props?.newProp ?? "newProp",
+ * }));
+ * ```
+ * @param propsTransformer You can use react hooks in the transformer function
+ * @param options
  * @returns
  */
 export const createTransformProps = <
@@ -118,18 +161,19 @@ export const createTransformProps = <
   ComponentPropsExtends extends PropsBase = PropsBase
 >(
   propsTransformer: FastHocPropsTransformer,
-  displayNamePrefix?: string
+  options?: CreateHocComponentOptions
 ) =>
   createHoc<TPipeTransform, ComponentPropsExtends>({
-    namePrefix: displayNamePrefix ?? "Transformed",
     propsTransformer,
     resultTransformer: null,
-    nameRewrite: null,
+    ...(options ?? DEFAULT_TRANSFORM_OPTIONS),
   });
 
-// type ObjectsAssign<T extends object> = Objects.Pick<T>;
+/**
+ * TransformPropsReturn is a type alias for the result of the transformProps function.
+ */
 export type TransformPropsReturn<
-  T extends React.ComponentType<any>,
+  TComponent extends React.ComponentType<any>,
   TNewProps extends PropsBase
 > = FastHocComponentWrapperReturn<
   [
@@ -137,20 +181,31 @@ export type TransformPropsReturn<
     HotscriptObjects.Assign<TNewProps>
   ],
   any,
-  T
+  TComponent
 >;
 
+/**
+ * transformProps is a function that takes a component, a props transformer function, and an
+ * optional display name prefix, and returns a higher-order component that wraps the input
+ * component with the specified props transformations.
+ *
+ * @param Component The input component to be wrapped with the props transformations.
+ * @param transformer A function that takes the new props and returns the previous props for the input component.
+ * @param options Optional string to prefix the display name of the resulting component.
+ * @returns A higher-order component that wraps the input component with the specified props transformations.
+ */
 export const transformProps = <
-  T extends React.ComponentType<any>,
-  TNewProps extends PropsBase,
-  TPreviousProps extends ComponentPropsWithRef<T> = ComponentPropsWithRef<T>
+  TComponent extends React.ComponentType<any>,
+  TNewProps extends PropsBase = ComponentPropsWithRef<TComponent>,
+  TPreviousProps extends ComponentPropsWithRef<TComponent> = ComponentPropsWithRef<TComponent>
 >(
-  Component: T,
+  Component: TComponent,
   transformer: (props: TNewProps) => TPreviousProps,
-  displayNamePrefix?: string
+  options?: CreateHocComponentOptions
 ) =>
   createTransformProps(
     // @ts-expect-error
     transformer,
-    displayNamePrefix
-  )(Component) as unknown as TransformPropsReturn<T, TNewProps>;
+    options
+  )(Component) as unknown as TransformPropsReturn<TComponent, TNewProps>;
+

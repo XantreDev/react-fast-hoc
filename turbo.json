@@ -13,6 +13,10 @@
       "persistent": true
     },
     "test": {},
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
     "release": {
       "dependsOn": ["build"]
     }
