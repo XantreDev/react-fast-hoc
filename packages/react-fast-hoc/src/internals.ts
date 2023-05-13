@@ -1,6 +1,6 @@
 import type { ReactNode, Ref } from "react";
 
-import { Get, isClassComponent, toFunctional } from "./toFunctional";
+import { type Get, isClassComponent, toFunctional } from "./toFunctional";
 
 // Using classes to save memory
 export class HocTransformer implements ProxyHandler<Function> {

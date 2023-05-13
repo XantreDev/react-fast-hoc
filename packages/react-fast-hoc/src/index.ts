@@ -44,7 +44,7 @@ type ChangeComponentProps<
  * Returns a FastHocComponentWrapper with the appropriate types for the component
  * and the transformation pipeline.
  */
-export type FastHocComponentWrapperReturn<
+export type WrappedComponent<
   TPipeTransform extends Fn[],
   TComponentPropsExtends extends object,
   TComponent extends ComponentType<any>,
@@ -54,27 +54,24 @@ export type FastHocComponentWrapperReturn<
 > = ChangeComponentProps<TComponent, Pipe<TComputedProps, TPipeTransform>>;
 
 /**
- * FastHocComponentWrapper is a higher-order component that wraps the input component
+ * Higher-order component that wraps the input component
  * with the provided transformation pipeline and new component props.
  */
-export type FastHocComponentWrapper<
+export type WrappedComponentCreator<
   TPipeTransform extends Fn[],
   TComponentPropsExtends extends object
 > = <TComponent extends ComponentType<any> = React.FC<any>>(
   component: TComponent
-) => FastHocComponentWrapperReturn<
+) => WrappedComponent<
   TPipeTransform,
   TComponentPropsExtends,
   TComponent
 >;
 
-/**
- * FastHocReturn is a type alias for FastHocComponentWrapper.
- */
-export type FastHocReturn<
+export type CreateHocReturn<
   TPipeTransform extends Fn[],
   TComponentPropsExtends extends PropsBase = PropsBase
-> = FastHocComponentWrapper<TPipeTransform, TComponentPropsExtends>;
+> = WrappedComponentCreator<TPipeTransform, TComponentPropsExtends>;
 
 /**
  * FastHocArg represents the argument object for the createHoc function. It contains
@@ -99,7 +96,7 @@ export type CreateHocComponentOptions = (
   mimicToNewComponent?: boolean;
 };
 /**
- * FastHocArg represents the argument object for the createHoc function. It contains
+ * represents the argument object for the createHoc function. It contains
  * the props and result transformers, and options for name prefix or rewrite.
  */
 export type CreateHocOptions = {
@@ -117,7 +114,7 @@ export const wrapIntoProxy =
       Component,
       proxy as HocTransformer,
       null
-    ) as FastHocComponentWrapperReturn<[], PropsBase, T>;
+    ) as WrappedComponent<[], PropsBase, T>;
 
 /**
  * @description *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
@@ -150,7 +147,7 @@ export const createHoc = <
       component,
       proxyObject,
       mimicToHandler
-    )) as FastHocReturn<TPipeTransform, ComponentPropsExtends>;
+    )) as CreateHocReturn<TPipeTransform, ComponentPropsExtends>;
 };
 
 const DEFAULT_TRANSFORM_OPTIONS = { namePrefix: "Transformed" } as const;
@@ -182,12 +179,12 @@ export const createTransformProps = <
   });
 
 /**
- * TransformPropsReturn is a type alias for the result of the transformProps function.
+ * type alias for the result of the transformProps function.
  */
 export type TransformPropsReturn<
   TComponent extends React.ComponentType<any>,
   TNewProps extends PropsBase
-> = FastHocComponentWrapperReturn<
+> = WrappedComponent<
   [
     HotscriptObjects.OmitBy<Booleans.Not<never>>,
     HotscriptObjects.Assign<TNewProps>
