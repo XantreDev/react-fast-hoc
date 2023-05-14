@@ -1,5 +1,16 @@
 # react-fast-hoc
 
+## 0.1.0
+
+### Minor Changes
+
+- ca39ecc: Added mimic to new component functionality. And changed `createHoc` options object api
+- b5e5c89: Fixed types naming
+
+### Patch Changes
+
+- 9966412: Added wrap into proxy function
+
 ## 0.0.3
 
 ### Patch Changes
