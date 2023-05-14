@@ -29,12 +29,14 @@
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit --diagnostics",
     "lint": "pnpm typecheck",
-    "build": "nanobundle build --clean --verbose"
+    "build:collect-readme": "cpx ../../README.md .",
+    "build": "pnpm build:collect-readme & nanobundle build --clean --verbose"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "cpx": "^1.5.0",
     "eslint-config-custom": "workspace:*",
     "jsdom": "^21.1.1",
     "nanobundle": "^1.6.0",

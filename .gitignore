@@ -36,3 +36,4 @@ yarn-error.log*
 .vercel
 
 **/lib
+/packages/react-fast-hoc/README.md

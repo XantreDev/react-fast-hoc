@@ -1,12 +1,20 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": [
+    "**/.env.*local",
+    "/README.md"
+  ],
   "pipeline": {
     "build": {
-      "outputs": ["lib/**"]
+      "outputs": [
+        "lib/**",
+        "README.md"
+      ]
     },
     "lint": {
-      "dependsOn": ["test"]
+      "dependsOn": [
+        "test"
+      ]
     },
     "dev": {
       "cache": false,
@@ -18,7 +26,9 @@
       "persistent": true
     },
     "release": {
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ]
     }
   }
 }

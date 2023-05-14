@@ -6,9 +6,9 @@ Lightweight and type-safe High-Order Components (HOCs) library for React, levera
 
 - [Installation](#installation)
 - [Usage](#usage)
+  - [transformProps](#transformProps)
   - [createHoc](#createHoc)
   - [createTransformProps](#createTransformProps)
-  - [transformProps](#transformProps)
 - [API Reference](#api-reference)
 - [Examples](#examples)
 - [License](#license)
@@ -34,6 +34,23 @@ ni react-fast-hoc && ni -D hotscript
 ```
 
 ## Usage
+
+### transformProps
+
+Directly create a new component with transformed props.
+
+```typescript
+import { transformProps } from "react-fast-hoc";
+
+const EnhancedComponent = transformProps(
+  MyComponent,
+  (props) => {
+    // Transform props here
+    return { ...props, transformedProp: "Transformed Value" };
+  },
+  "WithTransformedProps"
+);
+```
 
 ### createHoc
 
@@ -70,22 +87,7 @@ const withTransformedProps = createTransformProps((props) => {
 const EnhancedComponent = withTransformedProps(MyComponent);
 ```
 
-### transformProps
-
-Directly create a new component with transformed props.
-
-```typescript
-import { transformProps } from "react-fast-hoc";
-
-const EnhancedComponent = transformProps(
-  MyComponent,
-  (props) => {
-    // Transform props here
-    return { ...props, transformedProp: "Transformed Value" };
-  },
-  "WithTransformedProps"
-);
-```
+> You can use `wrapIntoProxy` to create more customizable hocs
 
 ## API Reference
 

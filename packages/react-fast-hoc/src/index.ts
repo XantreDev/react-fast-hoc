@@ -20,8 +20,7 @@ import {
 type PropsBase = Record<string | number | symbol, unknown>;
 
 /**
- * Returns a FastHocComponentWrapper with the appropriate types for the component
- * and the transformation pipeline.
+ * Returns new comonent types after wrapping into hoc 
  */
 type ChangeComponentProps<
   TComponent extends ComponentType<any>,
@@ -41,8 +40,7 @@ type ChangeComponentProps<
   : never;
 
 /**
- * Returns a FastHocComponentWrapper with the appropriate types for the component
- * and the transformation pipeline.
+ * Returns a wrapped component with transformed props
  */
 export type WrappedComponent<
   TPipeTransform extends Fn[],
@@ -73,10 +71,6 @@ export type CreateHocReturn<
   TComponentPropsExtends extends PropsBase = PropsBase
 > = WrappedComponentCreator<TPipeTransform, TComponentPropsExtends>;
 
-/**
- * FastHocArg represents the argument object for the createHoc function. It contains
- * the props and result transformers, and options for name prefix or rewrite.
- */
 export type PropsTransformer = (
   props: Record<string | symbol | number, unknown>
 ) => Record<string | symbol | number, unknown>;
@@ -107,6 +101,9 @@ export type CreateHocOptions = {
   resultTransformer: null | ((jsx: ReactNode) => ReactNode);
 } & CreateHocComponentOptions;
 
+/**
+  * allows to wrap component into the proxy as functional component
+  */
 export const wrapIntoProxy =
   (proxy: ProxyHandler<Function>) =>
   <T extends React.ComponentType>(Component: T) =>
