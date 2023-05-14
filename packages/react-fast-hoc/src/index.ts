@@ -20,7 +20,7 @@ import {
 type PropsBase = Record<string | number | symbol, unknown>;
 
 /**
- * Returns new comonent types after wrapping into hoc 
+ * Returns new comonent types after wrapping into hoc
  */
 type ChangeComponentProps<
   TComponent extends ComponentType<any>,
@@ -60,11 +60,7 @@ export type WrappedComponentCreator<
   TComponentPropsExtends extends object
 > = <TComponent extends ComponentType<any> = React.FC<any>>(
   component: TComponent
-) => WrappedComponent<
-  TPipeTransform,
-  TComponentPropsExtends,
-  TComponent
->;
+) => WrappedComponent<TPipeTransform, TComponentPropsExtends, TComponent>;
 
 export type CreateHocReturn<
   TPipeTransform extends Fn[],
@@ -102,8 +98,8 @@ export type CreateHocOptions = {
 } & CreateHocComponentOptions;
 
 /**
-  * allows to wrap component into the proxy as functional component
-  */
+ * allows to wrap component into the proxy as functional component
+ */
 export const wrapIntoProxy =
   (proxy: ProxyHandler<Function>) =>
   <T extends React.ComponentType>(Component: T) =>

@@ -27,8 +27,8 @@ describe("transforms component to needed type", () => {
   });
   test("transforms class component to function component", () => {
     console.log(createTransformProps(identityProps)(ClassComponent));
-    // @ts-expect-error internal property
     expect(
+      // @ts-expect-error internal property
       createTransformProps(identityProps)(ClassComponent).render
     ).toBeTypeOf("function");
   });

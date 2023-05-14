@@ -65,7 +65,7 @@ createHoc<TPipeTransform, ComponentPropsExtends>(params: FastHocArg): FastHocRet
 
 ### Parameters
 
-- `params`: An object containing the configuration for the HOC. *Extends CreateHocComponentOptions.* It includes:
+- `params`: An object containing the configuration for the HOC. _Extends CreateHocComponentOptions._ It includes:
   - `propsTransformer`: A function to transform the props of the wrapped component.
   - `resultTransformer`: A function to transform the rendered JSX of the wrapped component.
   - `namePrefix`: A string to prefix the display name of the wrapped component.
@@ -97,7 +97,7 @@ createTransformProps<TPipeTransform, ComponentPropsExtends>(propsTransformer: Fa
 
 A function that takes a React component as an argument and returns a new component wrapped in the HOC with the specified prop transformations.
 
---- 
+---
 
 ## wrapIntoProxy
 
@@ -116,13 +116,13 @@ A wrapped component that is a `React.ComponentType`.
 ### Usage
 
 ```tsx
-import React from 'react';
-import { wrapIntoProxy } from './react-fast-hoc';
+import React from "react";
+import { wrapIntoProxy } from "./react-fast-hoc";
 
 // Define a ProxyHandler
 const proxyHandler: ProxyHandler<Function> = {
-  apply: function(target, thisArg, argumentsList) {
-    console.log('Called with arguments:', argumentsList);
+  apply: function (target, thisArg, argumentsList) {
+    console.log("Called with arguments:", argumentsList);
     return Reflect.apply(target, thisArg, argumentsList);
   },
 };

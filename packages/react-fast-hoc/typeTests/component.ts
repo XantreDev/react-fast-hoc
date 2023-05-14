@@ -1,5 +1,5 @@
 import React, { ForwardRefExoticComponent, MemoExoticComponent } from "react";
-import { FastHocComponentWrapperReturn } from "../src";
+import { WrappedComponent } from "../src";
 import { Pass, check, checks } from "./helpers";
 
 type Functional = React.FC<{ a: number }>;
@@ -9,24 +9,20 @@ type MemoFunctional = React.MemoExoticComponent<React.FC<{ a: number }>>;
 type MemoClass = React.MemoExoticComponent<React.ComponentClass<{ a: number }>>;
 
 checks([
-  check<FastHocComponentWrapperReturn<[], any, Functional>, Functional, Pass>(),
+  check<WrappedComponent<[], any, Functional>, Functional, Pass>(),
   check<
-    FastHocComponentWrapperReturn<[], any, FunctionalWithRef>,
+    WrappedComponent<[], any, FunctionalWithRef>,
     FunctionalWithRef,
     Pass
   >(),
   check<
-    FastHocComponentWrapperReturn<[], any, Class>,
+    WrappedComponent<[], any, Class>,
     React.ForwardRefExoticComponent<React.ComponentPropsWithRef<Class>>,
     Pass
   >(),
+  check<WrappedComponent<[], any, MemoFunctional>, MemoFunctional, Pass>(),
   check<
-    FastHocComponentWrapperReturn<[], any, MemoFunctional>,
-    MemoFunctional,
-    Pass
-  >(),
-  check<
-    FastHocComponentWrapperReturn<[], any, MemoClass>,
+    WrappedComponent<[], any, MemoClass>,
     MemoExoticComponent<
       ForwardRefExoticComponent<React.ComponentPropsWithRef<MemoClass>>
     >,
