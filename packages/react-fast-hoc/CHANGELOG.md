@@ -1,5 +1,11 @@
 # react-fast-hoc
 
+## 0.1.1
+
+### Patch Changes
+
+- 65ea788: Fixed types, changed docs. Hotscript moved to dev deps
+
 ## 0.1.0
 
 ### Minor Changes
