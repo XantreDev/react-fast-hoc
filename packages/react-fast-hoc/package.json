@@ -38,6 +38,7 @@
     "@types/react-dom": "^18.2.0",
     "cpx": "^1.5.0",
     "eslint-config-custom": "workspace:*",
+    "hotscript": "^1.0.12",
     "jsdom": "^21.1.1",
     "nanobundle": "^1.6.0",
     "react": "^18.2.0",
@@ -47,7 +48,7 @@
     "vitest": "^0.30.1"
   },
   "peerDependencies": {
-    "hotscript": "^1.0.11",
+    "hotscript": "^1.0.12",
     "react": ">=17"
   },
   "dependencies": {

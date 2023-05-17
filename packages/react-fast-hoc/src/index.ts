@@ -1,4 +1,4 @@
-import type { Booleans, Fn, Pipe } from "hotscript";
+import type { Booleans, Fn, Objects, Pipe } from "hotscript";
 import {
   ComponentPropsWithRef,
   ElementType,
@@ -9,7 +9,6 @@ import {
   type ReactNode,
 } from "react";
 
-import type { HotscriptObjects } from "./hotscriptsTypes";
 import {
   HocTransformer,
   MimicToNewComponentHandler,
@@ -178,14 +177,19 @@ export type TransformPropsReturn<
   TComponent extends React.ComponentType<any>,
   TNewProps extends PropsBase
 > = WrappedComponent<
-  [
-    HotscriptObjects.OmitBy<Booleans.Not<never>>,
-    HotscriptObjects.Assign<TNewProps>
-  ],
+  [Objects.OmitBy<Booleans.Not<never>>, Objects.Assign<TNewProps>],
   any,
   TComponent
 >;
-
+export type TransformProps = <
+  TComponent extends React.ComponentType<any>,
+  TNewProps extends PropsBase = ComponentPropsWithRef<TComponent>,
+  TPreviousProps extends ComponentPropsWithRef<TComponent> = ComponentPropsWithRef<TComponent>
+>(
+  Component: TComponent,
+  transformer: (props: TNewProps) => TPreviousProps,
+  options?: CreateHocComponentOptions
+) => TransformPropsReturn<TComponent, TNewProps>;
 /**
  * transformProps is a function that takes a component, a props transformer function, and an
  * optional display name prefix, and returns a higher-order component that wraps the input
@@ -196,7 +200,7 @@ export type TransformPropsReturn<
  * @param options Optional string to prefix the display name of the resulting component.
  * @returns A higher-order component that wraps the input component with the specified props transformations.
  */
-export const transformProps = <
+export const transformProps: TransformProps = <
   TComponent extends React.ComponentType<any>,
   TNewProps extends PropsBase = ComponentPropsWithRef<TComponent>,
   TPreviousProps extends ComponentPropsWithRef<TComponent> = ComponentPropsWithRef<TComponent>
@@ -204,7 +208,7 @@ export const transformProps = <
   Component: TComponent,
   transformer: (props: TNewProps) => TPreviousProps,
   options?: CreateHocComponentOptions
-) =>
+): TransformPropsReturn<TComponent, TNewProps> =>
   createTransformProps(
     // @ts-expect-error
     transformer,

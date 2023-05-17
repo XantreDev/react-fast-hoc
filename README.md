@@ -17,22 +17,31 @@ Lightweight and type-safe High-Order Components (HOCs) library for React, levera
 
 Install the `react-fast-hoc` package:
 
+pnpm:
 ```sh
-# hotscript is a peer dependency
+pnpm i react-fast-hoc
+```
 
-npm i react-fast-hoc && npm i -D hotscript
-# or
-yarn add react-fast-hoc && yarn add -D hotscript
-# or
-pnpm i react-fast-hoc && pnpm i -D hotscript
+npm: 
+```sh
+npm i react-fast-hoc
+```
+
+yarn:
+```sh
+yarn add react-fast-hoc
 ```
 
 Or with [ni](https://www.npmjs.com/package/@antfu/ni):
 
 ```sh
-ni react-fast-hoc && ni -D hotscript
+ni react-fast-hoc
 ```
 
+Install the `hotscript` for advanced usage:
+```sh
+ni -D hotscript
+```
 ## Usage
 
 ### transformProps
