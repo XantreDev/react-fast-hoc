@@ -1,6 +1,13 @@
 import type { ReactNode, Ref } from "react";
 
-import { type Get, isClassComponent, toFunctional } from "./toFunctional";
+import { isClassComponent, toFunctional, type Get } from "./toFunctional";
+
+type Nameable = { displayName?: string; name?: string };
+
+const getComponentName = (Component: Function) =>
+  (Component as Nameable)?.displayName ??
+  (Component as Nameable)?.name ??
+  "UnknownComponent";
 
 // Using classes to save memory
 export class HocTransformer implements ProxyHandler<Function> {
@@ -21,14 +28,14 @@ export class HocTransformer implements ProxyHandler<Function> {
   }
 
   get(target: Function, p: string | symbol, receiver: any) {
+    if (process.env.NODE_ENV === "production") {
+      return Reflect.get(target, p, receiver);
+    }
     if (p !== "displayName") {
       return Reflect.get(target, p, receiver);
     }
     return (
-      this.nameRewrite ??
-      `${this.namePrefix ?? ""}${
-        (target as { displayName?: string })?.displayName ?? "UnknownComponent"
-      }`
+      this.nameRewrite ?? `${this.namePrefix ?? ""}${getComponentName(target)}`
     );
   }
 }
