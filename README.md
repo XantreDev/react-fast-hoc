@@ -2,6 +2,9 @@
 
 Lightweight and type-safe High-Order Components (HOCs) library for React, leveraging high-order types from "hotscript" and JavaScript Proxies for zero VDOM overhead and blazing-fast performance.
 
+
+![Demonstration](./code.png)
+
 ## Table of Contents
 
 - [Installation](#installation)
