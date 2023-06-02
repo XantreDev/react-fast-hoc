@@ -1,5 +1,11 @@
 # react-fast-hoc
 
+## 0.1.2
+
+### Patch Changes
+
+- 2245bd5: Fixed displayName prop for anonymous components and display name rewrite turned off for production enviroment
+
 ## 0.1.1
 
 ### Patch Changes
