@@ -1,13 +1,7 @@
 import type { ReactNode, Ref } from "react";
 
+import { getComponentName } from "./shared";
 import { isClassComponent, toFunctional, type Get } from "./toFunctional";
-
-type Nameable = { displayName?: string; name?: string };
-
-const getComponentName = (Component: Function) =>
-  (Component as Nameable)?.displayName ??
-  (Component as Nameable)?.name ??
-  "UnknownComponent";
 
 // Using classes to save memory
 export class HocTransformer implements ProxyHandler<Function> {

@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import { Component as ReactComponent, createElement, forwardRef } from "react";
+import { getComponentName } from "./shared";
 
 export const FC_STORE = new WeakMap<object, Function>();
 
@@ -13,9 +14,6 @@ const _toFunctional = <Props>(Component: ComponentType<Props>) => {
     return Component;
   }
 
-  const name = `${
-    Component.displayName ?? Component.name ?? "Unknown"
-  }FunctionalWrapper`;
   const FunctionalWrapper = forwardRef<Get<Props, "ref">, Props>((props, ref) =>
     createElement(
       Component as any,
@@ -27,10 +25,15 @@ const _toFunctional = <Props>(Component: ComponentType<Props>) => {
     )
   );
 
-  FunctionalWrapper.displayName = name;
-
   FC_STORE.set(Component, FunctionalWrapper);
   FC_STORE.set(FunctionalWrapper, FunctionalWrapper);
+
+  if (process.env.NODE_ENV === "production") {
+    return FunctionalWrapper;
+  }
+
+  const name = `${getComponentName(Component)}.FunctionalWrapper`;
+  FunctionalWrapper.displayName = name;
   return FunctionalWrapper;
 };
 
