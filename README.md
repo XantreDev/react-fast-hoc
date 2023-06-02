@@ -18,16 +18,19 @@ Lightweight and type-safe High-Order Components (HOCs) library for React, levera
 Install the `react-fast-hoc` package:
 
 pnpm:
+
 ```sh
 pnpm i react-fast-hoc
 ```
 
-npm: 
+npm:
+
 ```sh
 npm i react-fast-hoc
 ```
 
 yarn:
+
 ```sh
 yarn add react-fast-hoc
 ```
@@ -39,9 +42,49 @@ ni react-fast-hoc
 ```
 
 Install the `hotscript` for advanced usage:
+
 ```sh
 ni -D hotscript
 ```
+
+## Examples
+
+```tsx
+// without (extra VDOM overhead)
+const BirthdayInput = React.forwardRef(
+  (
+    { onChange, value }: Pick<DatePickerProps, "value" | "onChange">,
+    ref: null | DataPickerProps["ref"]
+  ) => (
+    <InputDate
+      onChange={onChange}
+      ref={ref}
+      value={value ?? DEFAULT_DATE_OF_BIRTH}
+      maxDate={MAXIMAL_DATE_OF_BIRTH}
+      minDate={MINIMAL_DATE_OF_BIRTH}
+    />
+  )
+);
+// with (zero VDOM overhead, can be used multiple times)
+import { transformProps } from "react-fast-hoc";
+
+const BirthdayInput = transformProps(
+  InputDate,
+  ({
+    onChange,
+    value,
+    ref,
+  }: Pick<DatePickerProps, "ref" | "value" | "onChange">) => ({
+    onChange,
+    value: value ?? DEFAULT_DATE_OF_BIRTH,
+    maxDate: MAXIMAL_DATE_OF_BIRTH,
+    minDate: MINIMAL_DATE_OF_BIRTH,
+    ref,
+  }),
+  { nameRewrite: "BirthdayInput" }
+);
+```
+
 ## Usage
 
 ### transformProps
@@ -57,7 +100,7 @@ const EnhancedComponent = transformProps(
     // Transform props here
     return { ...props, transformedProp: "Transformed Value" };
   },
-  "WithTransformedProps"
+  { namePrefix: "WithTransformedProps." }
 );
 ```
 
@@ -88,10 +131,13 @@ Create a new HOC that transforms the props passed to the wrapped component.
 ```typescript
 import { createTransformProps } from "react-fast-hoc";
 
-const withTransformedProps = createTransformProps((props) => {
-  // Transform props here
-  return { ...props, transformedProp: "Transformed Value" };
-}, "WithTransformedProps");
+const withTransformedProps = createTransformProps(
+  (props) => {
+    // Transform props here
+    return { ...props, transformedProp: "Transformed Value" };
+  },
+  { namePrefix: "WithTransformedProps." }
+);
 
 const EnhancedComponent = withTransformedProps(MyComponent);
 ```
