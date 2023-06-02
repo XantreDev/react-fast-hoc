@@ -1,5 +1,11 @@
 # react-fast-hoc
 
+## 0.1.3
+
+### Patch Changes
+
+- 780a15b: Updated readme
+
 ## 0.1.2
 
 ### Patch Changes
