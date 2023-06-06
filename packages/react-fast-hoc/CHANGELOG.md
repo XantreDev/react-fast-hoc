@@ -1,5 +1,12 @@
 # react-fast-hoc
 
+## 0.1.4
+
+### Patch Changes
+
+- e2d3d88: Added RewriteCall proxy handler, can be used with wrapIntoProxy
+- 695edfd: Added treeshaking
+
 ## 0.1.3
 
 ### Patch Changes
