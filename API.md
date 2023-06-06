@@ -38,7 +38,11 @@ export type CreateHocComponentOptions = (
 ### Syntax
 
 ```typescript
-function transformProps<T, TNewProps, TPreviousProps>(Component: T, transformer: (props: TNewProps) => TPreviousProps, displayNamePrefix?: string): TransformPropsReturn<T, TNewProps>
+function transformProps<T, TNewProps, TPreviousProps>(
+  Component: T,
+  transformer: (props: TNewProps) => TPreviousProps,
+  displayNamePrefix?: string
+): TransformPropsReturn<T, TNewProps>;
 ```
 
 ### Parameters
@@ -60,7 +64,9 @@ A new component wrapped in the HOC with the specified prop transformations.
 ### Syntax
 
 ```typescript
-function createHoc<TPipeTransform, ComponentPropsExtends>(params: FastHocArg): FastHocReturn<TPipeTransform, ComponentPropsExtends>
+function createHoc<TPipeTransform, ComponentPropsExtends>(
+  params: FastHocArg
+): FastHocReturn<TPipeTransform, ComponentPropsExtends>;
 ```
 
 ### Parameters
@@ -85,7 +91,10 @@ A function that takes a React component as an argument and returns a new compone
 ### Syntax
 
 ```typescript
-function createTransformProps<TPipeTransform, ComponentPropsExtends>(propsTransformer: FastHocPropsTransformer, displayNamePrefix?: string): FastHocReturn<TPipeTransform, ComponentPropsExtends>
+function createTransformProps<TPipeTransform, ComponentPropsExtends>(
+  propsTransformer: FastHocPropsTransformer,
+  displayNamePrefix?: string
+): FastHocReturn<TPipeTransform, ComponentPropsExtends>;
 ```
 
 ### Parameters
