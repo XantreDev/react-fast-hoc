@@ -15,12 +15,12 @@
     "name": "Valerii Smirnov",
     "url": "https://github.com/XantreGodlike"
   },
-  "main": "./lib/index.js",
+  "main": "./lib/cjs/index.cjs",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
-      "require": "./lib/index.js",
-      "import": "./lib/index.mjs"
+      "require": "./lib/cjs/index.cjs",
+      "import": "./lib/esm/index.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -30,7 +30,7 @@
     "typecheck": "tsc --noEmit --diagnostics",
     "lint": "pnpm typecheck",
     "build:collect-readme": "cpx ../../README.md .",
-    "build": "pnpm build:collect-readme & nanobundle build --clean --verbose"
+    "build": "pnpm build:collect-readme & rollup -c"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
@@ -44,13 +44,20 @@
     "nanobundle": "^1.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "ts-toolbelt": "^9.6.0",
     "tsconfig": "workspace:*",
     "type-fest": "^3.9.0",
-    "vitest": "^0.30.1",
-    "ts-toolbelt": "^9.6.0"
+    "vitest": "^0.30.1"
   },
   "peerDependencies": {
     "hotscript": "^1.0.12",
     "react": ">=17"
+  },
+  "dependencies": {
+    "@rollup/plugin-typescript": "^11.1.1",
+    "rollup": "^3.23.1",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-esbuild": "^5.0.0",
+    "rollup-plugin-node-externals": "^6.1.1"
   }
 }
