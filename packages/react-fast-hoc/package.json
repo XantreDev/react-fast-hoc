@@ -3,6 +3,7 @@
   "license": "MIT",
   "version": "0.1.4",
   "sideEffects": false,
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
