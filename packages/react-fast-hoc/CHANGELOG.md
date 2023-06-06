@@ -1,5 +1,11 @@
 # react-fast-hoc
 
+## 0.1.5
+
+### Patch Changes
+
+- 5d82ea0: Trying to really add treeshaking
+
 ## 0.1.4
 
 ### Patch Changes
