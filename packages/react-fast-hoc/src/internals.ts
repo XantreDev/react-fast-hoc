@@ -1,38 +1,6 @@
 import type { ReactNode, Ref } from "react";
-
-import { getComponentName } from "./shared";
 import { isClassComponent, toFunctional, type Get } from "./toFunctional";
-
-// Using classes to save memory
-export class HocTransformer implements ProxyHandler<Function> {
-  constructor(
-    private transformer: null | ((...args: any[]) => any[]),
-    private resultTransformer: null | ((result: ReactNode) => ReactNode),
-    private namePrefix: string | null,
-    private nameRewrite: string | null
-  ) {}
-
-  apply(target: Function, self: Function, args: any[]) {
-    const result = target.apply(
-      self,
-      this.transformer ? this.transformer(args) : args
-    );
-
-    return this.resultTransformer ? this.resultTransformer(result) : result;
-  }
-
-  get(target: Function, p: string | symbol, receiver: any) {
-    if (process.env.NODE_ENV === "production") {
-      return Reflect.get(target, p, receiver);
-    }
-    if (p !== "displayName") {
-      return Reflect.get(target, p, receiver);
-    }
-    return (
-      this.nameRewrite ?? `${this.namePrefix ?? ""}${getComponentName(target)}`
-    );
-  }
-}
+import type { HocTransformer, MimicToNewComponentHandler } from "./handlers";
 
 export const wrapPropsTransformer =
   <T extends object, R extends object>(transformer: (arg: T) => R) =>
@@ -109,59 +77,6 @@ const wrapFunctionalFROrDefault = <TProps extends object>(
   return new Proxy(Component as RegularFunctionComponent, handler);
 };
 
-export class MimicToNewComponentHandler implements ProxyHandler<Function> {
-  private _componentProps = new WeakMap<Function, Map<PropertyKey, unknown>>();
-
-  get(target: Function, p: PropertyKey, receiver: any) {
-    const overridenProps = this._componentProps.get(target);
-    if (overridenProps && overridenProps.has(p)) {
-      return overridenProps.get(p);
-    }
-    return Reflect.get(target, p, receiver);
-  }
-  set(target: Function, p: PropertyKey, value: any) {
-    const overridenProps = this._componentProps.get(target);
-    if (overridenProps) {
-      overridenProps.set(p, value);
-      return true;
-    }
-
-    this._componentProps.set(target, new Map([[p, value]]));
-    return true;
-  }
-  defineProperty(
-    target: Function,
-    property: PropertyKey,
-    attributes: PropertyDescriptor
-  ) {
-    if (!("value" in attributes)) {
-      console.error("Only value property is supported");
-      return false;
-    }
-    const overridenProps = this._componentProps.get(target);
-    if (overridenProps) {
-      overridenProps.set(property, attributes.value);
-      return true;
-    }
-
-    this._componentProps.set(target, new Map([[property, attributes.value]]));
-    return true;
-  }
-  deleteProperty(target: Function, p: PropertyKey) {
-    // TODO: IMPROVE
-    const overridenProps = this._componentProps.get(target);
-    if (overridenProps) {
-      overridenProps.delete(p);
-      return true;
-    }
-    return Reflect.deleteProperty(target, p);
-  }
-  has(target: Function, prop: PropertyKey) {
-    return (
-      this._componentProps.get(target)?.has(prop) || Reflect.has(target, prop)
-    );
-  }
-}
 // I don't know why but typescript is not helpful at all
 
 // Component can be memo class component or wrapped in hoc functional component
