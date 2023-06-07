@@ -1,5 +1,7 @@
 # React Fast HOC
 
+![Version](https://badgen.net/npm/v/react-fast-hoc) ![Ts support](https://badgen.net/npm/types/react-fast-hoc) ![Size](https://badgen.net/bundlephobia/min/react-fast-hoc) ![Size gzip](https://badgen.net/bundlephobia/minzip/react-fast-hoc) ![Tree shaking](https://badgen.net/bundlephobia/tree-shaking/react-fast-hoc)
+
 Lightweight and type-safe High-Order Components (HOCs) library for React, leveraging high-order types from "hotscript" and JavaScript Proxies for zero VDOM overhead and blazing-fast performance.
 
 ![Demonstration](./code.png)
