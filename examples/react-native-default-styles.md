@@ -2,6 +2,8 @@
 
 You can use `react-fast-hoc` for adding default styles in your own `react-native` application.
 
+- You could setup project with this manual and use `fontWeight` style property for choosing font weight: https://github.com/jsamr/react-native-font-demo
+
 Code snippet:
 
 ```tsx
