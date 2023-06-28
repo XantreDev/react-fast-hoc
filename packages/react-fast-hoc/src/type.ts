@@ -30,7 +30,7 @@ export type TransformProps = <
   options?: CreateHocComponentOptions
 ) => TransformPropsReturn<TComponent, TNewProps>;
 
-export type PropsBase = Record<string | number | symbol, unknown>;
+export type PropsBase = Record<string | number | symbol, any>;
 
 /**
  * Returns new comonent types after wrapping into hoc
