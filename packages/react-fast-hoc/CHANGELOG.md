@@ -1,5 +1,11 @@
 # react-fast-hoc
 
+## 0.1.7
+
+### Patch Changes
+
+- cc1dfd3: Moved build deps to devDependencies, and fixed type inference
+
 ## 0.1.6
 
 ### Patch Changes
