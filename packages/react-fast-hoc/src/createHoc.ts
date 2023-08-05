@@ -5,7 +5,7 @@ import { wrapComponentIntoHoc, wrapPropsTransformer } from "./internals";
 import type {
   CreateHocOptions,
   CreateHocReturn,
-  PipeTransform,
+  HocTypeTransform,
   PropsBase,
 } from "./type";
 
@@ -18,10 +18,10 @@ type PropsTransformPipe = Fn[];
  * @returns
  */
 export const createHoc = <
-  TPipeTransform extends Fn[] | PipeTransform<any, any>,
+  TPipeTransform extends Fn[] | HocTypeTransform<any, any>,
   ComponentPropsExtends extends PropsBase = PropsBase,
-  TActualTransform extends PipeTransform<any, any> = TPipeTransform extends Fn[]
-    ? PipeTransform<"props", ComposeLeft<TPipeTransform>>
+  TActualTransform extends HocTypeTransform<any, any> = TPipeTransform extends Fn[]
+    ? HocTypeTransform<"props", ComposeLeft<TPipeTransform>>
     : TPipeTransform
 >(
   params: CreateHocOptions
