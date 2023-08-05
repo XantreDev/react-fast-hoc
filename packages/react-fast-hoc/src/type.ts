@@ -1,10 +1,4 @@
-import type {
-  Booleans,
-  Call,
-  ComposeLeft,
-  Fn,
-  Objects
-} from "hotscript";
+import type { Booleans, Call, ComposeLeft, Fn, Objects } from "hotscript";
 import type {
   ComponentPropsWithRef,
   ComponentType,
@@ -70,7 +64,10 @@ export type WrappedComponent<
     : never
 > = ChangeComponentProps<TComponent, Call<TPipeTransform, TComputedProps>>;
 
-export type PipeTransform<TType extends "props" | "component", T extends Fn> = {
+export type HocTransformer<
+  TType extends "props" | "component",
+  T extends Fn
+> = {
   type: TType;
   fn: T;
 };
@@ -80,18 +77,21 @@ export type PipeTransform<TType extends "props" | "component", T extends Fn> = {
  * with the provided transformation pipeline and new component props.
  */
 export type WrappedComponentCreator<
-  TPipeTransform extends PipeTransform<any, any>,
+  TPipeTransform extends HocTransformer<any, any>,
   TComponentPropsExtends extends object
 > = <TComponent extends ComponentType<any> = React.FC<any>>(
   component: TComponent
-) => TPipeTransform extends PipeTransform<"props", infer TPropsTransform>
+) => TPipeTransform extends HocTransformer<"props", infer TPropsTransform>
   ? WrappedComponent<TPropsTransform, TComponentPropsExtends, TComponent>
-  : TPipeTransform extends PipeTransform<"component", infer TComponentTransform>
+  : TPipeTransform extends HocTransformer<
+      "component",
+      infer TComponentTransform
+    >
   ? Call<TComponentTransform, TComponent>
   : never;
 
 export type CreateHocReturn<
-  TPipeTransform extends PipeTransform<any, any>,
+  TPipeTransform extends HocTransformer<any, any>,
   TComponentPropsExtends extends PropsBase = PropsBase
 > = WrappedComponentCreator<TPipeTransform, TComponentPropsExtends>;
 
