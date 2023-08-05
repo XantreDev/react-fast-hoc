@@ -1,4 +1,4 @@
-import { Objects } from "hotscript";
+import { Fn, Objects } from "hotscript";
 import React, { ComponentPropsWithRef } from "react";
 import { createTransformProps } from "../src";
 import { Pass, check, checks } from "./helpers";
@@ -32,6 +32,19 @@ const ComponentWithCssInJs = cssInJsHoc(Component);
 const ComponentWithBebeAndCssInJs = cssInJsHoc(ComponentWithBebe);
 declare class A extends React.Component<{ a: number }> {}
 
+interface LolTransform extends Fn {
+  return: this["arg0"] extends React.ComponentClass<infer TProps>
+    ? React.FC<TProps>
+    : never;
+}
+const transformComponentType = createTransformProps<{
+  type: "component";
+  fn: LolTransform;
+}>((props) => props);
+
+const ClassTransformed = transformComponentType(A);
+const FunctionTransformed = transformComponentType(ComponentWithBebe);
+
 checks([
   check<ComponentPropsWithRef<typeof Component>, { a: number }, Pass>(),
   check<
@@ -45,6 +58,8 @@ checks([
     Pass
   >(),
   check<ComponentPropsWithRef<typeof ComponentWithBebeActual>, {}, Pass>(),
+  check<typeof ClassTransformed, React.FC<{ a: number }>, Pass>(),
+  check<typeof FunctionTransformed, never, Pass>(),
   check<
     ComponentPropsWithRef<typeof ComponentWithCssInJs>,
     ComponentPropsWithRef<typeof Component>,
