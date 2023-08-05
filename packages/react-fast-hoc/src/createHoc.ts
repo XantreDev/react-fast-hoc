@@ -1,8 +1,15 @@
-import type { Fn } from "hotscript";
+import type { ComposeLeft, Fn } from "hotscript";
 import type { ComponentType } from "react";
 import { HocTransformer, MimicToNewComponentHandler } from "./handlers";
 import { wrapComponentIntoHoc, wrapPropsTransformer } from "./internals";
-import type { CreateHocOptions, CreateHocReturn, PropsBase } from "./type";
+import type {
+  CreateHocOptions,
+  CreateHocReturn,
+  PipeTransform,
+  PropsBase,
+} from "./type";
+
+type PropsTransformPipe = Fn[];
 
 /**
  * @description *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
@@ -11,8 +18,11 @@ import type { CreateHocOptions, CreateHocReturn, PropsBase } from "./type";
  * @returns
  */
 export const createHoc = <
-  TPipeTransform extends Fn[],
-  ComponentPropsExtends extends PropsBase = PropsBase
+  TPipeTransform extends Fn[] | PipeTransform<any, any>,
+  ComponentPropsExtends extends PropsBase = PropsBase,
+  TActual extends PipeTransform<any, any> = TPipeTransform extends Fn[]
+    ? PipeTransform<"props", ComposeLeft<TPipeTransform>>
+    : TPipeTransform
 >(
   params: CreateHocOptions
 ) => {
@@ -34,5 +44,5 @@ export const createHoc = <
       component,
       proxyObject,
       mimicToHandler
-    )) as CreateHocReturn<TPipeTransform, ComponentPropsExtends>;
+    )) as CreateHocReturn<TActual, ComponentPropsExtends>;
 };
