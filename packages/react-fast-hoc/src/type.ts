@@ -1,4 +1,4 @@
-import type { Booleans, Fn, Objects, Pipe } from "hotscript";
+import type { Booleans, Call, ComposeLeft, Fn, Objects } from "hotscript";
 import type {
   ComponentPropsWithRef,
   ComponentType,
@@ -16,7 +16,7 @@ export type TransformPropsReturn<
   TComponent extends React.ComponentType<any>,
   TNewProps extends PropsBase
 > = WrappedComponent<
-  [Objects.OmitBy<Booleans.Not<never>>, Objects.Assign<TNewProps>],
+  ComposeLeft<[Objects.OmitBy<Booleans.Not<never>>, Objects.Assign<TNewProps>]>,
   any,
   TComponent
 >;
@@ -56,27 +56,42 @@ export type ChangeComponentProps<
  * Returns a wrapped component with transformed props
  */
 export type WrappedComponent<
-  TPipeTransform extends Fn[],
+  TPipeTransform extends Fn,
   TComponentPropsExtends extends object,
   TComponent extends ComponentType<any>,
   TComputedProps extends TComponentPropsExtends = TComponent extends ElementType<any>
     ? ComponentPropsWithRef<TComponent>
     : never
-> = ChangeComponentProps<TComponent, Pipe<TComputedProps, TPipeTransform>>;
+> = ChangeComponentProps<TComponent, Call<TPipeTransform, TComputedProps>>;
+
+export type HocTypeTransform<
+  TType extends "props" | "component",
+  T extends Fn
+> = {
+  type: TType;
+  fn: T;
+};
 
 /**
  * Higher-order component that wraps the input component
  * with the provided transformation pipeline and new component props.
  */
 export type WrappedComponentCreator<
-  TPipeTransform extends Fn[],
+  TPipeTransform extends HocTypeTransform<any, any>,
   TComponentPropsExtends extends object
 > = <TComponent extends ComponentType<any> = React.FC<any>>(
   component: TComponent
-) => WrappedComponent<TPipeTransform, TComponentPropsExtends, TComponent>;
+) => TPipeTransform extends HocTypeTransform<"props", infer TPropsTransform>
+  ? WrappedComponent<TPropsTransform, TComponentPropsExtends, TComponent>
+  : TPipeTransform extends HocTypeTransform<
+      "component",
+      infer TComponentTransform
+    >
+  ? Call<TComponentTransform, TComponent>
+  : never;
 
 export type CreateHocReturn<
-  TPipeTransform extends Fn[],
+  TPipeTransform extends HocTypeTransform<any, any>,
   TComponentPropsExtends extends PropsBase = PropsBase
 > = WrappedComponentCreator<TPipeTransform, TComponentPropsExtends>;
 

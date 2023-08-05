@@ -1,3 +1,4 @@
+import { Identity } from "hotscript";
 import type { HocTransformer } from "./handlers";
 import { wrapComponentIntoHoc } from "./internals";
 import type { PropsBase, WrappedComponent } from "./type";
@@ -12,4 +13,4 @@ export const wrapIntoProxy =
       Component,
       proxy as HocTransformer,
       null
-    ) as WrappedComponent<[], PropsBase, T>;
+    ) as WrappedComponent<Identity, PropsBase, T>;
