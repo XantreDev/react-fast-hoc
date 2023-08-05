@@ -20,7 +20,7 @@ type PropsTransformPipe = Fn[];
 export const createHoc = <
   TPipeTransform extends Fn[] | PipeTransform<any, any>,
   ComponentPropsExtends extends PropsBase = PropsBase,
-  TActual extends PipeTransform<any, any> = TPipeTransform extends Fn[]
+  TActualTransform extends PipeTransform<any, any> = TPipeTransform extends Fn[]
     ? PipeTransform<"props", ComposeLeft<TPipeTransform>>
     : TPipeTransform
 >(
@@ -44,5 +44,5 @@ export const createHoc = <
       component,
       proxyObject,
       mimicToHandler
-    )) as CreateHocReturn<TActual, ComponentPropsExtends>;
+    )) as CreateHocReturn<TActualTransform, ComponentPropsExtends>;
 };
