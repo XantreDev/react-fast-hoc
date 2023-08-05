@@ -1,5 +1,11 @@
 # react-fast-hoc
 
+## 0.2.0
+
+### Minor Changes
+
+- 309bcff: Add oportunity to transform component directly, not only props
+
 ## 0.1.7
 
 ### Patch Changes
