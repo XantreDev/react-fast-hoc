@@ -1,5 +1,11 @@
 # react-fast-hoc
 
+## 0.2.1
+
+### Patch Changes
+
+- 3537998: Fix `wrapIntoProxy` type issue
+
 ## 0.2.0
 
 ### Minor Changes
