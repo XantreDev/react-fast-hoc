@@ -1,6 +1,6 @@
 import type React from "react";
 
-type ComponentArgs = [props: object, ref: React.Ref<unknown>];
+type ComponentArgs = [props: Record<any, unknown>, ref: React.Ref<unknown>];
 
 export class RewriteCall implements ProxyHandler<Function> {
   constructor(

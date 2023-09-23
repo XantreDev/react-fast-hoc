@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "noEmit": true,
+    "moduleResolution": "Node",
+    "rootDir": ".",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["./src", "./typeTests"],
+  "extends": "tsconfig/react-library.json"
+}

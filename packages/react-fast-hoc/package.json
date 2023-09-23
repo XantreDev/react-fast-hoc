@@ -20,9 +20,9 @@
   "types": "./lib/index.d.ts",
   "module": "./lib/esm/index.mjs",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run && tsc --project tsconfig.node.json",
     "test:watch": "vitest watch",
-    "typecheck": "tsc --noEmit --diagnostics",
+    "typecheck": "tsc --noEmit",
     "lint": "pnpm typecheck",
     "build:collect-readme": "cpx ../../README.md .",
     "build": "pnpm build:collect-readme & rollup -c"

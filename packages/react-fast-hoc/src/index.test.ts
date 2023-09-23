@@ -2,8 +2,8 @@ import { cleanup, render } from "@testing-library/react";
 import { Objects } from "hotscript";
 import React, { createElement, forwardRef, memo } from "react";
 import { Function } from "ts-toolbelt";
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { createTransformProps } from ".";
+import { afterEach, describe, expect, expectTypeOf, test, vi } from "vitest";
+import { createTransformProps, transformProps, wrapIntoProxy } from ".";
 
 const identityProps = <T>(props: T) => props;
 
@@ -131,7 +131,7 @@ describe("transformProps", () => {
   // test("works with unloaded lazy", async () => {
   //   const Cmp = vi.fn(Component);
   //   const Lazy = React.lazy(() => Promise.resolve({ default: Cmp }));
-  
+
   //   console.log(Lazy._payload._result.toString());
   //   console.log(Lazy._init.toString());
   //   render(
@@ -149,4 +149,31 @@ describe("transformProps", () => {
   //     expect(Cmp).toHaveBeenCalledWith({ bebe: true }, {});
   //   });
   // });
+});
+
+describe.skip("type tests", () => {
+  expectTypeOf(() =>
+    transformProps(
+      {} as React.ForwardRefExoticComponent<{
+        ref?: React.Ref<number>;
+      }>,
+      identityProps
+    )
+  )
+    .returns.parameter(0)
+    .toEqualTypeOf<{
+      ref?: React.Ref<number>;
+    }>();
+
+  expectTypeOf(() =>
+    wrapIntoProxy({})(
+      {} as React.ForwardRefExoticComponent<{
+        ref?: React.Ref<number>;
+      }>
+    )
+  )
+    .returns.parameter(0)
+    .toEqualTypeOf<{
+      ref?: React.Ref<number>;
+    }>();
 });

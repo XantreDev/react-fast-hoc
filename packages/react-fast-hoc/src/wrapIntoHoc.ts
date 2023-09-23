@@ -8,7 +8,7 @@ import type { PropsBase, WrappedComponent } from "./type";
  */
 export const wrapIntoProxy =
   (proxy: ProxyHandler<Function>) =>
-  <T extends React.ComponentType>(Component: T) =>
+  <T extends React.ComponentType<any>>(Component: T) =>
     wrapComponentIntoHoc(
       Component,
       proxy as HocTransformer,

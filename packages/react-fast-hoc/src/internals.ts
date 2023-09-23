@@ -2,6 +2,11 @@ import type { ReactNode, Ref } from "react";
 import type { HocTransformer, MimicToNewComponentHandler } from "./handlers";
 import { isClassComponent, toFunctional, type Get } from "./toFunctional";
 
+export const isRef = <T = unknown>(maybeRef: unknown): maybeRef is Ref<T> =>
+  maybeRef === null ||
+  typeof maybeRef === "function" ||
+  (!!maybeRef && typeof maybeRef === "object" && "current" in maybeRef);
+
 export const wrapPropsTransformer =
   <T extends object, R extends object>(transformer: (arg: T) => R) =>
   (args: [Omit<T, "ref">, Get<T, "ref">]) => {
@@ -10,23 +15,20 @@ export const wrapPropsTransformer =
     // so wrapping it into props transform hoc has overhead
     const props = Object.assign(Object.create(null), _props);
 
-    const isRealRef =
-      ref === null ||
-      typeof ref === "function" ||
-      (ref && typeof ref === "object" && "current" in ref);
-    if (isRealRef) {
+    const hasRef = isRef(ref);
+    if (hasRef) {
       (props as any).ref = ref;
     }
 
     type RealProps = T & { ref: Get<T, "ref"> };
 
     const resultProps = transformer(props as RealProps);
-    const resultRef = isRealRef && "ref" in resultProps && resultProps["ref"];
-    if (isRealRef) {
+    const resultRef = "ref" in resultProps && resultProps["ref"];
+    if ("ref" in resultProps) {
       delete (resultProps as R & { ref?: unknown }).ref;
     }
 
-    return [resultProps, isRealRef && resultRef ? resultRef : ref] as const;
+    return [resultProps, hasRef && isRef(resultRef) ? resultRef : ref] as const;
   };
 
 const REACT_MEMO_TYPE = Symbol.for("react.memo");

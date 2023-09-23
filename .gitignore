@@ -37,3 +37,4 @@ yarn-error.log*
 
 **/lib
 /packages/react-fast-hoc/README.md
+**/*.tsbuildinfo
