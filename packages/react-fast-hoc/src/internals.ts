@@ -1,6 +1,6 @@
 import type { ReactNode, Ref } from "react";
-import { isClassComponent, toFunctional, type Get } from "./toFunctional";
 import type { HocTransformer, MimicToNewComponentHandler } from "./handlers";
+import { isClassComponent, toFunctional, type Get } from "./toFunctional";
 
 export const wrapPropsTransformer =
   <T extends object, R extends object>(transformer: (arg: T) => R) =>
@@ -31,6 +31,14 @@ export const wrapPropsTransformer =
 
 const REACT_MEMO_TYPE = Symbol.for("react.memo");
 const REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
+const REACT_LAZY_TYPE = Symbol.for("react.lazy");
+
+// const enum LazyStatus {
+//   Uninitialized = -1,
+//   Pending = 0,
+//   Resolved = 1,
+//   Rejected = 2,
+// }
 
 type RealComponentType<TProps extends object, IRef = unknown> =
   | {
@@ -41,6 +49,11 @@ type RealComponentType<TProps extends object, IRef = unknown> =
       $$typeof: typeof REACT_MEMO_TYPE;
       compare: null | ((a: TProps, b: TProps) => boolean);
       type: (props: TProps) => ReactNode;
+    }
+  | {
+      $$typeof: typeof REACT_LAZY_TYPE;
+      _status: -1 | 0 | 1 | 2;
+      _result: unknown;
     }
   | React.ComponentClass<TProps>
   | React.FC<TProps>;
@@ -111,6 +124,9 @@ export const wrapComponentIntoHoc = <TProps extends object>(
       // render is always function
       render: new Proxy(Component.render, handler),
     };
+  }
+  if ("$$typeof" in Component && Component["$$typeof"] === REACT_LAZY_TYPE) {
+    return Component;
   }
 
   const proxied = new Proxy(Component, handler);

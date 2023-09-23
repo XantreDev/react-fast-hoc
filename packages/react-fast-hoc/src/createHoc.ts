@@ -9,8 +9,6 @@ import type {
   PropsBase,
 } from "./type";
 
-type PropsTransformPipe = Fn[];
-
 /**
  * @description *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
  * @param propsTransformer You can use react hooks in the transformer function.
@@ -20,7 +18,10 @@ type PropsTransformPipe = Fn[];
 export const createHoc = <
   TPipeTransform extends Fn[] | HocTypeTransform<any, any>,
   ComponentPropsExtends extends PropsBase = PropsBase,
-  TActualTransform extends HocTypeTransform<any, any> = TPipeTransform extends Fn[]
+  TActualTransform extends HocTypeTransform<
+    any,
+    any
+  > = TPipeTransform extends Fn[]
     ? HocTypeTransform<"props", ComposeLeft<TPipeTransform>>
     : TPipeTransform
 >(

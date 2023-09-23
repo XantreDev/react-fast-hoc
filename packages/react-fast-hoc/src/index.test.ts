@@ -126,4 +126,27 @@ describe("transformProps", () => {
     expect(addBebeProp).lastCalledWith({ ref: null });
     expect(Component).toHaveBeenCalledWith({ bebe: true }, null);
   });
+
+  // TODO: add support for lazy
+  // test("works with unloaded lazy", async () => {
+  //   const Cmp = vi.fn(Component);
+  //   const Lazy = React.lazy(() => Promise.resolve({ default: Cmp }));
+  
+  //   console.log(Lazy._payload._result.toString());
+  //   console.log(Lazy._init.toString());
+  //   render(
+  //     createElement(
+  //       React.Suspense,
+  //       {},
+  //       createElement(addBebeHoc(Lazy))
+  //     )
+  //   );
+  //   await waitFor(() => {
+  //     expect(Cmp).toHaveBeenCalled();
+  //     console.log(Lazy)
+  //     expect(addBebeProp).toHaveBeenCalled();
+  //     expect(addBebeProp).lastCalledWith({});
+  //     expect(Cmp).toHaveBeenCalledWith({ bebe: true }, {});
+  //   });
+  // });
 });
