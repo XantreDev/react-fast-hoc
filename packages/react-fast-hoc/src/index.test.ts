@@ -1,9 +1,18 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import { Objects } from "hotscript";
-import React, { createElement, forwardRef, memo } from "react";
+import React, { ComponentType, createElement, forwardRef, memo } from "react";
 import { Function } from "ts-toolbelt";
 import { afterEach, describe, expect, expectTypeOf, test, vi } from "vitest";
 import { createTransformProps, transformProps, wrapIntoProxy } from ".";
+
+declare module "react" {
+  export interface ExoticComponent {
+    _payload?: {
+      _result: any;
+    };
+    _init?: () => void;
+  }
+}
 
 const identityProps = <T>(props: T) => props;
 
@@ -33,7 +42,6 @@ describe("transforms component to needed type", () => {
     ).toBeTypeOf("function");
   });
 });
-
 describe("transformProps", () => {
   const addBebeProp = vi.fn(
     (props: Record<never, never>) =>
@@ -127,28 +135,24 @@ describe("transformProps", () => {
     expect(Component).toHaveBeenCalledWith({ bebe: true }, null);
   });
 
-  // TODO: add support for lazy
-  // test("works with unloaded lazy", async () => {
-  //   const Cmp = vi.fn(Component);
-  //   const Lazy = React.lazy(() => Promise.resolve({ default: Cmp }));
+  describe("hocs: lazy", () => {
+    test("unloaded lazy", async () => {
+      const Cmp = vi.fn(Component);
+      const Lazy = React.lazy(() => Promise.resolve({ default: Cmp }));
 
-  //   console.log(Lazy._payload._result.toString());
-  //   console.log(Lazy._init.toString());
-  //   render(
-  //     createElement(
-  //       React.Suspense,
-  //       {},
-  //       createElement(addBebeHoc(Lazy))
-  //     )
-  //   );
-  //   await waitFor(() => {
-  //     expect(Cmp).toHaveBeenCalled();
-  //     console.log(Lazy)
-  //     expect(addBebeProp).toHaveBeenCalled();
-  //     expect(addBebeProp).lastCalledWith({});
-  //     expect(Cmp).toHaveBeenCalledWith({ bebe: true }, {});
-  //   });
-  // });
+      console.log(Lazy._payload?._result?.toString());
+      console.log(Lazy._init?.toString());
+      render(
+        createElement(React.Suspense, {}, createElement(addBebeHoc(Lazy)))
+      );
+      await waitFor(() => {
+        expect(Cmp).toHaveBeenCalled();
+        console.log(Lazy);
+        expect(addBebeProp).toHaveBeenCalled();
+        expect(addBebeProp).lastCalledWith({});
+      });
+    });
+  });
 });
 
 describe.skip("type tests", () => {
