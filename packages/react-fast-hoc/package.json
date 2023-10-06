@@ -28,6 +28,7 @@
     "build": "pnpm build:collect-readme & rollup -c"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.1",
     "@testing-library/react": "^14.0.0",
     "@types/node": "^20.2.5",
     "@types/react": "^18.2.0",
@@ -37,17 +38,17 @@
     "hotscript": "^1.0.12",
     "jsdom": "^21.1.1",
     "nanobundle": "^1.6.0",
+    "radash": "^11.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "ts-toolbelt": "^9.6.0",
-    "tsconfig": "workspace:*",
-    "type-fest": "^3.9.0",
-    "vitest": "^0.30.1",
-    "@rollup/plugin-typescript": "^11.1.1",
     "rollup": "^3.23.1",
     "rollup-plugin-dts": "^5.3.0",
     "rollup-plugin-esbuild": "^5.0.0",
-    "rollup-plugin-node-externals": "^6.1.1"
+    "rollup-plugin-node-externals": "^6.1.1",
+    "ts-toolbelt": "^9.6.0",
+    "tsconfig": "workspace:*",
+    "type-fest": "^3.9.0",
+    "vitest": "^0.30.1"
   },
   "peerDependencies": {
     "hotscript": "^1.0.12",

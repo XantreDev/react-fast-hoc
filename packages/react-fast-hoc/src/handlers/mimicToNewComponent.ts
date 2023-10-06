@@ -1,4 +1,4 @@
-export class MimicToNewComponentHandler implements ProxyHandler<Function> {
+export class MimicToNewComponentHandler implements ProxyHandler<object> {
   private _componentProps = new WeakMap<Function, Map<PropertyKey, unknown>>();
 
   get(target: Function, p: PropertyKey, receiver: any) {
