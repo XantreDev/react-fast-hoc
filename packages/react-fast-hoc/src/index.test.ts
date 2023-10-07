@@ -1,9 +1,19 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, waitFor } from "@testing-library/react";
+import { sleep } from "radash";
 import { Objects } from "hotscript";
-import React, { createElement, forwardRef, memo } from "react";
+import React, { ComponentType, createElement, forwardRef, memo } from "react";
 import { Function } from "ts-toolbelt";
 import { afterEach, describe, expect, expectTypeOf, test, vi } from "vitest";
 import { createTransformProps, transformProps, wrapIntoProxy } from ".";
+
+declare module "react" {
+  export interface ExoticComponent {
+    _payload?: {
+      _result: any;
+    };
+    _init?: () => void;
+  }
+}
 
 const identityProps = <T>(props: T) => props;
 
@@ -33,7 +43,6 @@ describe("transforms component to needed type", () => {
     ).toBeTypeOf("function");
   });
 });
-
 describe("transformProps", () => {
   const addBebeProp = vi.fn(
     (props: Record<never, never>) =>
@@ -56,7 +65,6 @@ describe("transformProps", () => {
 
   class ClassComponent extends React.Component {
     constructor(props: unknown) {
-      console.log("class created", props);
       super(props as {});
       propsDetector(this.props);
     }
@@ -127,28 +135,77 @@ describe("transformProps", () => {
     expect(Component).toHaveBeenCalledWith({ bebe: true }, null);
   });
 
-  // TODO: add support for lazy
-  // test("works with unloaded lazy", async () => {
-  //   const Cmp = vi.fn(Component);
-  //   const Lazy = React.lazy(() => Promise.resolve({ default: Cmp }));
+  describe("hocs: lazy", () => {
+    test("unloaded lazy", async () => {
+      const Cmp = vi.fn(Component);
+      const Lazy = React.lazy(() => Promise.resolve({ default: Cmp }));
 
-  //   console.log(Lazy._payload._result.toString());
-  //   console.log(Lazy._init.toString());
-  //   render(
-  //     createElement(
-  //       React.Suspense,
-  //       {},
-  //       createElement(addBebeHoc(Lazy))
-  //     )
-  //   );
-  //   await waitFor(() => {
-  //     expect(Cmp).toHaveBeenCalled();
-  //     console.log(Lazy)
-  //     expect(addBebeProp).toHaveBeenCalled();
-  //     expect(addBebeProp).lastCalledWith({});
-  //     expect(Cmp).toHaveBeenCalledWith({ bebe: true }, {});
-  //   });
-  // });
+      render(
+        createElement(React.Suspense, {}, createElement(addBebeHoc(Lazy)))
+      );
+      await waitFor(() => {
+        expect(Cmp).toHaveBeenCalled();
+        expect(addBebeProp).toHaveBeenCalled();
+        expect(addBebeProp).lastReturnedWith({
+          bebe: true,
+        });
+      });
+    });
+    test("pending lazy", async () => {
+      const Cmp = vi.fn(Component);
+      const lazyInit = vi.fn(() => sleep(20).then(() => ({ default: Cmp })));
+      const Lazy = React.lazy(lazyInit);
+      const r = render(createElement(React.Suspense, {}, createElement(Lazy)));
+      expect(Cmp).not.toHaveBeenCalled();
+      expect(lazyInit).toHaveBeenCalled();
+
+      r.rerender(
+        createElement(React.Suspense, {}, createElement(addBebeHoc(Lazy)))
+      );
+
+      await waitFor(
+        () => {
+          expect(Cmp).toHaveBeenCalled();
+          expect(addBebeProp).toHaveBeenCalled();
+          expect(addBebeProp).lastReturnedWith({
+            bebe: true,
+          });
+        },
+        {
+          timeout: 100,
+        }
+      );
+    });
+    test("resolved lazy", async () => {
+      const Cmp = vi.fn(Component);
+      const Lazy = React.lazy(() => Promise.resolve({ default: Cmp }));
+      const r = render(createElement(React.Suspense, {}, createElement(Lazy)));
+      await waitFor(
+        () => {
+          expect(Cmp).toHaveBeenCalled();
+          expect(addBebeProp).not.toHaveBeenCalled();
+        },
+        {
+          timeout: 100,
+        }
+      );
+
+      r.rerender(
+        createElement(React.Suspense, {}, createElement(addBebeHoc(Lazy)))
+      );
+      expect(Cmp).toHaveBeenCalledTimes(2);
+      expect(addBebeProp).toHaveBeenCalled();
+      expect(Cmp).lastCalledWith(
+        {
+          bebe: true,
+        },
+        {}
+      );
+      expect(addBebeProp).lastReturnedWith({
+        bebe: true,
+      });
+    });
+  });
 });
 
 describe.skip("type tests", () => {

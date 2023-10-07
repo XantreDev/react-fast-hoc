@@ -54,8 +54,12 @@ type RealComponentType<TProps extends object, IRef = unknown> =
     }
   | {
       $$typeof: typeof REACT_LAZY_TYPE;
-      _status: -1 | 0 | 1 | 2;
-      _result: unknown;
+      _payload: {
+        _status: -1 | 0 | 1 | 2;
+        _result: unknown;
+      };
+      // returns component or throws promise
+      _init: (arg: unknown) => React.ComponentType<unknown>;
     }
   | React.ComponentClass<TProps>
   | React.FC<TProps>;
@@ -99,7 +103,7 @@ export const wrapComponentIntoHoc = <TProps extends object>(
   Component: RealComponentType<TProps>,
   handler: HocTransformer,
   mimicToNewComponentHandler: null | MimicToNewComponentHandler
-) => {
+): unknown => {
   // this case assumes that it's ClassComponent
   if (isClassComponent(Component)) {
     return wrapFunctionalFROrDefault(
@@ -128,11 +132,30 @@ export const wrapComponentIntoHoc = <TProps extends object>(
     };
   }
   if ("$$typeof" in Component && Component["$$typeof"] === REACT_LAZY_TYPE) {
-    return Component;
+    let result: RealComponentType<any>;
+    return {
+      $$typeof: REACT_LAZY_TYPE,
+      _payload: Component._payload,
+      _init: (arg: unknown) => {
+        const initRes = Component._init(arg);
+        if (!result) {
+          result = wrapComponentIntoHoc(
+            initRes,
+            handler,
+            mimicToNewComponentHandler
+          ) as RealComponentType<any>;
+        }
+        return result;
+      },
+    } as RealComponentType<any>;
   }
 
   const proxied = new Proxy(Component, handler);
+
   return mimicToNewComponentHandler
-    ? new Proxy(proxied, mimicToNewComponentHandler)
+    ? (new Proxy(
+        proxied,
+        mimicToNewComponentHandler
+      ) as RealComponentType<TProps>)
     : proxied;
 };
