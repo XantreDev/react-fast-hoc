@@ -1,7 +1,7 @@
 import type { ComponentPropsWithRef } from "react";
 import { createTransformProps } from "./createTransformProps";
 import type {
-  CreateHocComponentOptions,
+  CreateTransformPropsOptions,
   PropsBase,
   TransformProps,
   TransformPropsReturn,
@@ -24,7 +24,7 @@ export const transformProps: TransformProps = <
 >(
   Component: TComponent,
   transformer: (props: TNewProps) => TPreviousProps,
-  options?: CreateHocComponentOptions
+  options?: CreateTransformPropsOptions
 ): TransformPropsReturn<TComponent, TNewProps> =>
   createTransformProps(
     // @ts-expect-error

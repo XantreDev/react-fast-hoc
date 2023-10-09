@@ -12,7 +12,9 @@ describe("mimic to new component test", () => {
 
   test("test addition", () => {
     const wrappedComponent = Object.assign(
-      transformProps(Component, (props) => props),
+      transformProps(Component, (props) => props, {
+        mimicToNewComponent: true,
+      }),
       {
         bebe: "da",
       }

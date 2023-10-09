@@ -3,11 +3,34 @@ import type { ComponentType } from "react";
 import { HocTransformer, MimicToNewComponentHandler } from "./handlers";
 import { wrapComponentIntoHoc, wrapPropsTransformer } from "./internals";
 import type {
+  CreateHocNameOption,
   CreateHocOptions,
   CreateHocReturn,
+  DisplayNameTransform,
   HocTypeTransform,
   PropsBase,
 } from "./type";
+import { UnionToIntersection } from "type-fest";
+import { isString } from "./shared";
+
+const paramsToDisplayNameTransformer = (
+  params: Partial<UnionToIntersection<CreateHocNameOption>>
+): DisplayNameTransform | null => {
+  if (isString(params.namePrefix)) {
+    return {
+      type: "prefix",
+      value: params.namePrefix,
+    };
+  }
+  if (isString(params.nameRewrite)) {
+    return {
+      type: "rewrite",
+      value: params.nameRewrite,
+    };
+  }
+
+  return params.displayNameTransform ?? null;
+};
 
 /**
  * @description *Transformations is not typesafe, you should [hotscript](https://github.com/gvergnaud/HOTScript) for type transformation*
@@ -27,18 +50,17 @@ export const createHoc = <
 >(
   params: CreateHocOptions
 ) => {
-  const { mimicToNewComponent = true } = params;
   const proxyObject = new HocTransformer(
     params.propsTransformer
       ? wrapPropsTransformer(params.propsTransformer)
       : null,
     params.resultTransformer,
-    "namePrefix" in params ? params.namePrefix : null,
-    "nameRewrite" in params ? params.nameRewrite : null
+    paramsToDisplayNameTransformer(params)
   );
-  const mimicToHandler = mimicToNewComponent
-    ? new MimicToNewComponentHandler()
-    : null;
+  const mimicToHandler =
+    params?.mimicToNewComponent ?? false
+      ? new MimicToNewComponentHandler()
+      : null;
 
   return ((component: ComponentType<unknown>) =>
     wrapComponentIntoHoc(

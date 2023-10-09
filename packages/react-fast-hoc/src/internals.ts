@@ -99,6 +99,14 @@ const wrapFunctionalFROrDefault = <TProps extends object>(
 // I don't know why but typescript is not helpful at all
 
 // Component can be memo class component or wrapped in hoc functional component
+/**
+ *
+ * @internal
+ * @param Component
+ * @param handler
+ * @param mimicToNewComponentHandler
+ * @returns
+ */
 export const wrapComponentIntoHoc = <TProps extends object>(
   Component: RealComponentType<TProps>,
   handler: HocTransformer,

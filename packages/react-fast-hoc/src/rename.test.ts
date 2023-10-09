@@ -11,6 +11,14 @@ describe("renaming works", () => {
     });
 
     expect(B.displayName).toBe("B");
+    expect(
+      transformProps(B, (props) => props, {
+        displayNameTransform: {
+          type: "rewrite",
+          value: "D",
+        },
+      }).displayName
+    ).toBe("D");
 
     const Bebe = transformProps(Beb, (props) => props, {
       nameRewrite: "Bebe",
@@ -18,14 +26,33 @@ describe("renaming works", () => {
     expect(Bebe.displayName).toBe("Bebe");
   });
   test("prefix function works", () => {
-    const C = transformProps(A, (props) => props, {
-      namePrefix: "C",
-    });
-
-    expect(C.displayName).toBe("CA");
+    expect(
+      transformProps(A, (props) => props, {
+        namePrefix: "C",
+      }).displayName
+    ).toBe("CA");
+    expect(
+      transformProps(A, (props) => props, {
+        displayNameTransform: {
+          type: "prefix",
+          value: "CBC",
+        },
+      }).displayName
+    ).toBe("CBCA");
     const Bebe = transformProps(Beb, (props) => props, {
       namePrefix: "Bebe",
     });
     expect(Bebe.displayName).toBe("BebeBababa");
+  });
+
+  test("dynamic renaming works", () => {
+    expect(
+      transformProps(A, (props) => props, {
+        displayNameTransform: {
+          value: (name) => name + "C",
+          type: "rewrite-dynamic",
+        },
+      }).displayName
+    ).toBe("AC");
   });
 });

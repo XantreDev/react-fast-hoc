@@ -1,4 +1,5 @@
 import type { Booleans, Call, ComposeLeft, Fn, Objects } from "hotscript";
+import type { SetOptional, Simplify, UnionToIntersection } from "type-fest";
 import type {
   ComponentPropsWithRef,
   ComponentType,
@@ -27,7 +28,7 @@ export type TransformProps = <
 >(
   Component: TComponent,
   transformer: (props: TNewProps) => TPreviousProps,
-  options?: CreateHocComponentOptions
+  options?: CreateTransformPropsOptions
 ) => TransformPropsReturn<TComponent, TNewProps>;
 
 export type PropsBase = Record<string | number | symbol, any>;
@@ -99,20 +100,58 @@ export type PropsTransformer = (
   props: Record<string | symbol | number, unknown>
 ) => Record<string | symbol | number, unknown>;
 
-export type CreateHocComponentOptions = (
+export type DisplayNameTransform = Extract<
+  CreateHocNameOption,
+  {
+    displayNameTransform: {};
+  }
+>["displayNameTransform"];
+export type CreateHocNameOption =
   | {
+      /** @deprecated use displayNameTransform */
+      nameRewrite: string;
+    }
+  | {
+      /** @deprecated use displayNameTransform */
       namePrefix: string;
     }
   | {
-      nameRewrite: string;
-    }
-) & {
+      /**
+       * @description its to useful to know what component is wrapped in hoc in devtools
+       */
+      displayNameTransform:
+        | {
+            type: "rewrite";
+            value: string;
+          }
+        | {
+            type: "prefix";
+            value: string;
+          }
+        | {
+            type: "rewrite-dynamic";
+            value: (name: string) => string;
+          };
+    };
+
+export type CreateHocSharedOptions = {
   /**
+   * @deprecated I have not found a use case for this option
    * @description This feature has overhead in terms of using another proxy
    * to you can easilty mutate and define new properties, and not change inital component
+   * @default false
    */
   mimicToNewComponent?: boolean;
 };
+
+export type CreateHocComponentOptions = Simplify<
+  CreateHocNameOption & CreateHocSharedOptions
+>;
+
+export type CreateTransformPropsOptions = Simplify<
+  Partial<CreateHocNameOption> & CreateHocSharedOptions
+>;
+
 /**
  * represents the argument object for the createHoc function. It contains
  * the props and result transformers, and options for name prefix or rewrite.

@@ -2,6 +2,7 @@ import type { ComposeLeft, Fn, Identity } from "hotscript";
 import { createHoc } from "./createHoc";
 import type {
   CreateHocComponentOptions,
+  CreateTransformPropsOptions,
   HocTypeTransform,
   PropsBase,
   PropsTransformer,
@@ -28,15 +29,18 @@ export const createTransformProps = <
     Identity
   >,
   ComponentPropsExtends extends PropsBase = PropsBase,
-  TActualTransform extends HocTypeTransform<any, any> = TPipeTransform extends Fn[]
+  TActualTransform extends HocTypeTransform<
+    any,
+    any
+  > = TPipeTransform extends Fn[]
     ? HocTypeTransform<"props", ComposeLeft<TPipeTransform>>
     : TPipeTransform
 >(
   propsTransformer: PropsTransformer,
-  options?: CreateHocComponentOptions
+  options?: CreateTransformPropsOptions
 ) =>
   createHoc<TActualTransform, ComponentPropsExtends>({
     propsTransformer,
     resultTransformer: null,
-    ...(options ?? DEFAULT_TRANSFORM_OPTIONS),
+    ...((options ?? DEFAULT_TRANSFORM_OPTIONS) as CreateHocComponentOptions),
   });
