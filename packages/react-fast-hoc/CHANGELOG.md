@@ -1,5 +1,57 @@
 # react-fast-hoc
 
+## 0.3.0
+
+### Minor Changes
+
+- d2cc312: Deprecated `mimicToNewComponent` and make default to false (true was before)
+- 8680658: Made displayName editable for each transformed component:
+
+  ```tsx
+  const _ = transformProps(A, (props) => props, {
+    displayNameTransform: {
+      value: (name) => name + "C",
+      type: "rewrite-dynamic",
+    },
+  });
+  expect(_.displayName).toBe("AC");
+  _.displayName = "D";
+  expect(_.displayName).toBe("D");
+  ```
+
+- d2cc312: Added new syntax for name rewriting, old one is deprecated and will be removed soon
+
+  Static name rewrite
+
+  ```tsx
+  transformProps(B, (props) => props, {
+    displayNameTransform: {
+      type: "rewrite",
+      value: "D",
+    },
+  });
+
+  transformProps(A, (props) => props, {
+    displayNameTransform: {
+      type: "prefix",
+      value: "CBC",
+    },
+  });
+  ```
+
+  Dynamic name rewrite
+
+  ```tsx
+  transformProps(A, (props) => props, {
+    displayNameTransform: {
+      value: (name) => name + "C",
+      type: "rewrite-dynamic",
+    },
+  });
+  ```
+
+- f057209: Added support for components wrapped with `React.lazy`
+
 ## 0.2.1
 
 ### Patch Changes
