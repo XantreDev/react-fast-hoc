@@ -55,4 +55,26 @@ describe("renaming works", () => {
       }).displayName
     ).toBe("AC");
   });
+
+  test("that component is imperatively renameable", () => {
+    const _ = transformProps(A, (props) => props, {
+      displayNameTransform: {
+        value: (name) => name + "C",
+        type: "rewrite-dynamic",
+      },
+    });
+    expect(_.displayName).toBe("AC");
+    _.displayName = "D";
+    expect(_.displayName).toBe("D");
+    const __ = transformProps(_, (props) => props, {
+      displayNameTransform: {
+        type: "rewrite",
+        value: "E",
+      },
+    });
+    expect(__.displayName).toBe("E");
+    __.displayName = "bebe";
+    expect(__.displayName).toBe("bebe");
+    expect(_.displayName).toBe("D");
+  });
 });

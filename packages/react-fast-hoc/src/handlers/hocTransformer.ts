@@ -20,6 +20,7 @@ const calculateDisplayNameTransform = (
 
 // Using classes to save memory
 export class HocTransformer implements ProxyHandler<Function> {
+  _displayNameField = Symbol("displayName");
   constructor(
     private transformer:
       | null
@@ -38,15 +39,30 @@ export class HocTransformer implements ProxyHandler<Function> {
   }
 
   get(target: Function, p: string | symbol, receiver: any) {
-    if (process.env.NODE_ENV === "production") {
+    if (
+      process.env.NODE_ENV === "production" ||
+      p !== "displayName" ||
+      !this.displayNameTransform
+    ) {
       return Reflect.get(target, p, receiver);
     }
-    if (p !== "displayName" || !this.displayNameTransform) {
-      return Reflect.get(target, p, receiver);
+    if (!(this._displayNameField in target)) {
+      // @ts-expect-error
+      target[this._displayNameField] = calculateDisplayNameTransform(
+        getComponentName(target),
+        this.displayNameTransform
+      );
     }
-    return calculateDisplayNameTransform(
-      getComponentName(target),
-      this.displayNameTransform
-    );
+
+    // @ts-expect-error
+    return target[this._displayNameField];
+  }
+  set(target: Function, p: string | symbol, value: any) {
+    if (process.env.NODE_ENV !== "production" && p === "displayName") {
+      // @ts-expect-error
+      target[this._displayNameField] = value;
+      return true;
+    }
+    return Reflect.set(target, p, value);
   }
 }

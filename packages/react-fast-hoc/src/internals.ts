@@ -35,13 +35,6 @@ const REACT_MEMO_TYPE = Symbol.for("react.memo");
 const REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
 const REACT_LAZY_TYPE = Symbol.for("react.lazy");
 
-// const enum LazyStatus {
-//   Uninitialized = -1,
-//   Pending = 0,
-//   Resolved = 1,
-//   Rejected = 2,
-// }
-
 type RealComponentType<TProps extends object, IRef = unknown> =
   | {
       $$typeof: typeof REACT_FORWARD_REF_TYPE;
