@@ -1,6 +1,6 @@
 # React Fast HOC
 
-Lightweight and type-safe High-Order Components (HOCs) library for React, leveraging high-order types from "hotscript" and JavaScript Proxies for zero VDOM overhead.
+Lightweight and type-safe High-Order Components (HOCs) library for React, leveraging high-order types from [`hotscript`](https://github.com/gvergnaud/hotscript) and JavaScript Proxies for zero VDOM overhead.
 
 [![Version](https://img.shields.io/npm/v/react-fast-hoc)](https://www.npmjs.com/package/react-fast-hoc)
 [![Size](https://img.shields.io/bundlephobia/minzip/react-fast-hoc)](https://bundlephobia.com/package/react-fast-hoc)
