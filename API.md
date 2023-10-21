@@ -12,16 +12,37 @@ This document provides an overview of the API for the `react-fast-hoc` package. 
 
 ---
 
-```typescript
+```ts
 export type CreateHocComponentOptions = (
   | {
+      /** @deprecated use displayNameTransform */
+      nameRewrite: string;
+    }
+  | {
+      /** @deprecated use displayNameTransform */
       namePrefix: string;
     }
   | {
-      nameRewrite: string;
+      /**
+       * @description its to useful to know what component is wrapped in hoc in devtools
+       */
+      displayNameTransform:
+        | {
+            type: "rewrite";
+            value: string;
+          }
+        | {
+            type: "prefix";
+            value: string;
+          }
+        | {
+            type: "rewrite-dynamic";
+            value: (name: string) => string;
+          };
     }
 ) & {
   /**
+   * @deprecated
    * @description This feature has overhead in terms of using another proxy
    * to you can easilty mutate and define new properties, and not change inital component
    */
@@ -41,7 +62,7 @@ export type CreateHocComponentOptions = (
 function transformProps<T, TNewProps, TPreviousProps>(
   Component: T,
   transformer: (props: TNewProps) => TPreviousProps,
-  displayNamePrefix?: string
+  options?: CreateHocComponentOptions
 ): TransformPropsReturn<T, TNewProps>;
 ```
 
@@ -74,8 +95,7 @@ function createHoc<TPipeTransform, ComponentPropsExtends>(
 - `params`: An object containing the configuration for the HOC. _Extends CreateHocComponentOptions._ It includes:
   - `propsTransformer`: A function to transform the props of the wrapped component.
   - `resultTransformer`: A function to transform the rendered JSX of the wrapped component.
-  - `namePrefix`: A string to prefix the display name of the wrapped component.
-  - `nameRewrite`: A string to replace the display name of the wrapped component.
+  - `displayNameTransform`: Property for displayName rewrite.
   - `mimicToNewComponent`: enabled by default
 
 ### Returns
