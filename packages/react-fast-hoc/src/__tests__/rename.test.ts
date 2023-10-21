@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { transformProps } from ".";
+import { transformProps } from "..";
 
 describe("renaming works", () => {
   const A = () => null;

@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { RewriteCall } from "./rewriteCall";
+import { RewriteCall } from "../handlers/rewriteCall";
 
 describe("rewrite call should rewrite it", () => {
   const f = vi.fn();

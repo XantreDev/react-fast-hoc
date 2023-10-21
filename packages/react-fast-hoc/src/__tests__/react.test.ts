@@ -1,24 +1,22 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { act, cleanup, render, waitFor } from "@testing-library/react";
 import { range, sleep, tryit } from "radash";
 import React, { ComponentType, createElement } from "react";
-
-const renderComponent = (Component: React.ComponentType) =>
-  render(createElement(Component));
-
-const lazyShort = <T extends ComponentType<any>>(component: T) =>
-  React.lazy(() =>
-    Promise.resolve({
-      default: component,
-    })
-  );
-
-const applyHocs = <T extends ComponentType<any>>(
-  Component: T,
-  hocs: ((...args: any) => any)[]
-): T => hocs.reduceRight((acc, cur) => cur(acc), Component);
+import { applyHocs, lazyShort, renderComponent } from "./utils";
 
 function noop() {}
+
+afterEach(() => {
+  cleanup();
+});
 
 /**
  * oportunities

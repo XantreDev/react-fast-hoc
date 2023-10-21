@@ -1,4 +1,4 @@
-import { isValidElement, type ReactNode, type Ref } from "react";
+import React, { isValidElement, type ReactNode, type Ref } from "react";
 import type { HocTransformer, MimicToNewComponentHandler } from "./handlers";
 import { isClassComponent, toFunctional, type Get } from "./toFunctional";
 
@@ -43,7 +43,7 @@ type RealComponentType<TProps extends object, IRef = unknown> =
   | {
       $$typeof: typeof REACT_MEMO_TYPE;
       compare: null | ((a: TProps, b: TProps) => boolean);
-      type: (props: TProps) => ReactNode;
+      type: RealComponentType<TProps, IRef>;
     }
   | {
       $$typeof: typeof REACT_LAZY_TYPE;
@@ -65,28 +65,34 @@ type ReactFunctionalComponentType<
   { $$typeof: typeof REACT_FORWARD_REF_TYPE } | React.FC<TProps>
 >;
 
-const wrapFunctionalFROrDefault = <TProps extends object>(
+type ForwardRefComponent<TProps extends object> = Extract<
+  ReactFunctionalComponentType<TProps>,
+  { $$typeof: typeof REACT_FORWARD_REF_TYPE }
+>;
+type RegularFunctionComponent<TProps extends object> = Exclude<
+  ReactFunctionalComponentType<TProps>,
+  ForwardRefComponent<TProps>
+>;
+const wrapFCWithForwardRefOrPlain = <TProps extends object>(
   Component: ReactFunctionalComponentType<TProps>,
   handler: HocTransformer
-) => {
-  type ForwardRefComponent = Extract<
-    ReactFunctionalComponentType<TProps>,
-    { $$typeof: typeof REACT_FORWARD_REF_TYPE }
-  >;
-  type RegularFunctionComponent = Exclude<
-    ReactFunctionalComponentType<TProps>,
-    ForwardRefComponent
-  >;
+): ForwardRefComponent<TProps> | ReactFunctionalComponentType<TProps> => {
   if (
     "$$typeof" in Component &&
     Component["$$typeof"] === REACT_FORWARD_REF_TYPE
   ) {
     return {
       $$typeof: REACT_FORWARD_REF_TYPE,
-      render: new Proxy((Component as ForwardRefComponent).render, handler),
-    };
+      render: new Proxy(
+        (Component as ForwardRefComponent<TProps>).render,
+        handler
+      ),
+    } as ForwardRefComponent<TProps>;
   }
-  return new Proxy(Component as RegularFunctionComponent, handler);
+  return new Proxy(
+    Component as Function,
+    handler
+  ) as RegularFunctionComponent<TProps>;
 };
 
 // I don't know why but typescript is not helpful at all
@@ -105,13 +111,14 @@ export const wrapComponentIntoHoc = <TProps extends object>(
   handler: HocTransformer,
   mimicToNewComponentHandler: null | MimicToNewComponentHandler
 ): unknown => {
-  if (process.env.NODE_ENV === "development" && !isValidElement(Component)) {
-    console.warn("react-fast-hoc: passed incorrect component for transform");
-    return Component;
-  }
+  // should use isValidElementType
+  // if (process.env.NODE_ENV === "development" && !isValidElement(Component)) {
+  //   console.warn("react-fast-hoc: passed incorrect component for transform");
+  //   return Component;
+  // }
   // this case assumes that it's ClassComponent
   if (isClassComponent(Component)) {
-    return wrapFunctionalFROrDefault(
+    return wrapFCWithForwardRefOrPlain(
       toFunctional(Component) as React.FC<TProps>,
       handler
     );
@@ -120,8 +127,7 @@ export const wrapComponentIntoHoc = <TProps extends object>(
   if ("$$typeof" in Component && Component["$$typeof"] === REACT_MEMO_TYPE) {
     return {
       $$typeof: REACT_MEMO_TYPE,
-      // @ts-expect-error
-      type: wrapFunctionalFROrDefault(toFunctional(Component.type), handler),
+      type: wrapComponentIntoHoc(Component.type, handler, null),
       compare: Component.compare,
     };
   }
@@ -147,7 +153,7 @@ export const wrapComponentIntoHoc = <TProps extends object>(
           result = wrapComponentIntoHoc(
             initRes,
             handler,
-            mimicToNewComponentHandler
+            null
           ) as RealComponentType<any>;
         }
         return result;
