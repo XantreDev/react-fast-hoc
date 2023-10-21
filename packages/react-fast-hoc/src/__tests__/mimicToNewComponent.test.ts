@@ -1,5 +1,5 @@
 import { assert, beforeEach, describe, expect, test } from "vitest";
-import { transformProps } from ".";
+import { transformProps } from "..";
 
 const createComponent = () => () => null;
 

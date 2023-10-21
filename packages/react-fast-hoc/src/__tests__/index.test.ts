@@ -4,7 +4,8 @@ import { Objects } from "hotscript";
 import React, { ComponentType, createElement, forwardRef, memo } from "react";
 import { Function } from "ts-toolbelt";
 import { afterEach, describe, expect, expectTypeOf, test, vi } from "vitest";
-import { createTransformProps, transformProps, wrapIntoProxy } from ".";
+import { createTransformProps, transformProps, wrapIntoProxy } from "..";
+import { applyHocs, lazyShort, renderComponent } from "./utils";
 
 declare module "react" {
   export interface ExoticComponent {
@@ -102,17 +103,29 @@ describe("transformProps", () => {
     });
   });
 
-  test("works with memo after hoc", () => {
-    render(createElement(memo(addBebeHoc(Component))));
-    standardCheck();
-  });
-  test("works with memo before hoc", () => {
-    render(createElement(addBebeHoc(memo(Component))));
+  describe("hocs: memo", () => {
+    test("memo -> hoc", () => {
+      renderComponent(applyHocs(Component, [React.memo, addBebeHoc]));
+      standardCheck();
+    });
+    test("hoc -> memo", () => {
+      renderComponent(applyHocs(Component, [addBebeHoc, React.memo]));
 
-    expect(Component).toHaveBeenCalledOnce();
-    expect(addBebeProp).toHaveBeenCalledOnce();
-    expect(addBebeProp).toHaveBeenCalledWith({});
-    expect(Component).toHaveBeenCalledWith({ bebe: true }, {});
+      expect(Component).toHaveBeenCalledOnce();
+      expect(addBebeProp).toHaveBeenCalledOnce();
+      expect(addBebeProp).toHaveBeenCalledWith({});
+      expect(Component).toHaveBeenCalledWith({ bebe: true }, {});
+    });
+    test("hoc -> memo -> memo", () => {
+      renderComponent(
+        applyHocs(Component, [addBebeHoc, React.memo, React.memo])
+      );
+
+      expect(Component).toHaveBeenCalledOnce();
+      expect(addBebeProp).toHaveBeenCalledOnce();
+      expect(addBebeProp).toHaveBeenCalledWith({});
+      expect(Component).toHaveBeenCalledWith({ bebe: true }, {});
+    });
   });
 
   // this
@@ -138,7 +151,7 @@ describe("transformProps", () => {
   describe("hocs: lazy", () => {
     test("unloaded lazy", async () => {
       const Cmp = vi.fn(Component);
-      const Lazy = React.lazy(() => Promise.resolve({ default: Cmp }));
+      const Lazy = lazyShort(Cmp);
 
       render(
         createElement(React.Suspense, {}, createElement(addBebeHoc(Lazy)))

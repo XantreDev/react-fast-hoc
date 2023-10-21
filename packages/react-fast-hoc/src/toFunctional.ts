@@ -46,7 +46,9 @@ const isPrototypeOf = Function.call.bind(Object.prototype.isPrototypeOf) as (
   child: unknown
 ) => boolean;
 
-export const isClassComponent = <T>(
+export const isClassComponent = isPrototypeOf.bind(
+  isPrototypeOf,
+  ReactComponent
+) as <T>(
   Component: T
-): Component is Extract<T, React.ComponentClass<any, any>> =>
-  isPrototypeOf(ReactComponent, Component);
+) => Component is Extract<T, React.ComponentClass<any, any>>;
