@@ -1,4 +1,4 @@
-import type { ReactNode, Ref } from "react";
+import { isValidElement, type ReactNode, type Ref } from "react";
 import type { HocTransformer, MimicToNewComponentHandler } from "./handlers";
 import { isClassComponent, toFunctional, type Get } from "./toFunctional";
 
@@ -105,6 +105,10 @@ export const wrapComponentIntoHoc = <TProps extends object>(
   handler: HocTransformer,
   mimicToNewComponentHandler: null | MimicToNewComponentHandler
 ): unknown => {
+  if (process.env.NODE_ENV === "development" && !isValidElement(Component)) {
+    console.warn("react-fast-hoc: passed incorrect component for transform");
+    return Component;
+  }
   // this case assumes that it's ClassComponent
   if (isClassComponent(Component)) {
     return wrapFunctionalFROrDefault(
