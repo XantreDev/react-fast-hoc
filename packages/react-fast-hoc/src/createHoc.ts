@@ -40,7 +40,7 @@ const paramsToDisplayNameTransformer = (
  */
 export const createHoc = <
   TPipeTransform extends Fn[] | HocTypeTransform<any, any>,
-  ComponentPropsExtends extends PropsBase = PropsBase,
+  TComponentPropsExtends extends PropsBase = PropsBase,
   TActualTransform extends HocTypeTransform<
     any,
     any
@@ -67,5 +67,5 @@ export const createHoc = <
       component,
       proxyObject,
       mimicToHandler
-    )) as CreateHocReturn<TActualTransform, ComponentPropsExtends>;
+    )) as CreateHocReturn<TActualTransform, TComponentPropsExtends>;
 };

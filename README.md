@@ -1,8 +1,8 @@
 # React Fast HOC
 
-![Version](https://badgen.net/npm/v/react-fast-hoc) ![Ts support](https://badgen.net/npm/types/react-fast-hoc) ![Size](https://badgen.net/bundlephobia/min/react-fast-hoc) ![Size gzip](https://badgen.net/bundlephobia/minzip/react-fast-hoc) ![Tree shaking](https://badgen.net/bundlephobia/tree-shaking/react-fast-hoc)
+Lightweight and type-safe High-Order Components (HOCs) library for React, leveraging high-order types from "hotscript" and JavaScript Proxies for zero VDOM overhead.
 
-Lightweight and type-safe High-Order Components (HOCs) library for React, leveraging high-order types from "hotscript" and JavaScript Proxies for zero VDOM overhead and blazing-fast performance.
+![Version](https://badgen.net/npm/v/react-fast-hoc) ![Ts support](https://badgen.net/npm/types/react-fast-hoc) ![Size](https://badgen.net/bundlephobia/min/react-fast-hoc) ![Size gzip](https://badgen.net/bundlephobia/minzip/react-fast-hoc) ![Tree shaking](https://badgen.net/bundlephobia/tree-shaking/react-fast-hoc)
 
 ![Demonstration](./code.png)
 
@@ -45,7 +45,7 @@ Or with [ni](https://www.npmjs.com/package/@antfu/ni):
 ni react-fast-hoc
 ```
 
-Install the `hotscript` for advanced usage:
+Install the `hotscript` for creating complex props transformations:
 
 ```sh
 ni -D hotscript
@@ -85,7 +85,7 @@ const BirthdayInput = transformProps(
     minDate: MINIMAL_DATE_OF_BIRTH,
     ref,
   }),
-  { nameRewrite: "BirthdayInput" }
+  { displayNameTransform: { type: "rewrite", value: "BirthdayInput" } }
 );
 ```
 
@@ -95,7 +95,7 @@ const BirthdayInput = transformProps(
 
 Directly create a new component with transformed props.
 
-```typescript
+```ts
 import { transformProps } from "react-fast-hoc";
 
 const EnhancedComponent = transformProps(
@@ -104,7 +104,7 @@ const EnhancedComponent = transformProps(
     // Transform props here
     return { ...props, transformedProp: "Transformed Value" };
   },
-  { namePrefix: "WithTransformedProps." }
+  { displayNameTransform: { type: "rewrite", value: "WithTransformedProps." } }
 );
 ```
 
@@ -112,17 +112,19 @@ const EnhancedComponent = transformProps(
 
 Create a new HOC with a custom props transformer and optional display name prefix.
 
-```typescript
+```ts
 import { createHoc } from "react-fast-hoc";
 
 const withCustomLogic = createHoc({
-  namePrefix: "WithCustomLogic",
   propsTransformer: (props) => {
     // Apply custom logic here
     return { ...props, customProp: "Custom Value" };
   },
   resultTransformer: null,
-  nameRewrite: null,
+  displayNameTransform: {
+    type: "prefix",
+    value: "WithCustomLogic.",
+  },
 });
 
 const EnhancedComponent = withCustomLogic(MyComponent);
@@ -140,7 +142,12 @@ const withTransformedProps = createTransformProps(
     // Transform props here
     return { ...props, transformedProp: "Transformed Value" };
   },
-  { namePrefix: "WithTransformedProps." }
+  {
+    displayNameTransform: {
+      type: "prefix",
+      value: "WithTransformedProps.",
+    },
+  }
 );
 
 const EnhancedComponent = withTransformedProps(MyComponent);
