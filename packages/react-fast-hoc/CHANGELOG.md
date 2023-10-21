@@ -1,5 +1,12 @@
 # react-fast-hoc
 
+## 0.3.2
+
+### Patch Changes
+
+- 0920933: Removed deprecated api examples from README
+  Fixes: [#20](https://github.com/XantreGodlike/react-fast-hoc/issues/20)
+
 ## 0.3.1
 
 ### Patch Changes
