@@ -63,6 +63,7 @@ export const createHoc = <
     wrapComponentIntoHoc(
       component,
       proxyObject,
-      mimicToHandler
+      mimicToHandler,
+      params.hooks && params.hooks.length > 0 ? new Set(params.hooks) : null
     )) as CreateHocReturn<TActualTransform, TComponentPropsExtends>;
 };

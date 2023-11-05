@@ -150,7 +150,7 @@ export type RealForwardRefComponentType<
 
 export type RealMemoComponentType<TProps extends object, TRef = unknown> = {
   $$typeof: typeof REACT_MEMO_TYPE;
-  compare: null | ((a: TProps, b: TProps) => boolean);
+  compare: null | PropsAreEqual<TProps>;
   type: RealComponentType<TProps, TRef>;
 };
 
@@ -171,9 +171,15 @@ export type RealComponentType<TProps extends object, TRef = unknown> =
   | React.ComponentClass<TProps>
   | React.FC<TProps>;
 
+export type PropsAreEqual<TProps extends object> = (
+  prevProps: TProps,
+  nextProps: TProps
+) => boolean;
 export type HocHook = {
   type: "first-memo";
-  value: (component: RealComponentType<unknown & object, unknown>) => {};
+  value: (
+    compareFn: null | PropsAreEqual<object>
+  ) => null | PropsAreEqual<object>;
 };
 export type CreateHocSharedOptions = {
   /**

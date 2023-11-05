@@ -20,5 +20,6 @@ export type {
   TransformPropsReturn,
   WrappedComponent,
   WrappedComponentCreator,
+  PropsAreEqual,
 } from "./type";
 export * from "./wrapIntoHoc";

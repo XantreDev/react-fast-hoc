@@ -1,18 +1,46 @@
-import { cleanup, render, waitFor } from "@testing-library/react";
-import { sleep } from "radash";
-import { Objects } from "hotscript";
-import React, { ComponentType, createElement, forwardRef, memo } from "react";
-import { Function } from "ts-toolbelt";
-import { afterEach, describe, expect, expectTypeOf, test, vi } from "vitest";
-import { createTransformProps, transformProps, wrapIntoProxy } from "..";
-import { applyHocs, lazyShort, renderComponent } from "./utils";
+import { act, cleanup, render } from "@testing-library/react";
+import { createElement, memo } from "react";
+import {
+  afterEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import { transformProps } from "..";
+import { useRerender } from "./utils";
 
 describe("hooks for transforms should work", () => {
-  const A = () => null
-  transformProps(A, it => it, {
-    hooks: [{
-      type: 'first-memo',
-      value: () => {}
-    }]
-  })
-})
+  const A = vi.fn(() => null);
+  afterEach(() => {
+    cleanup();
+    A.mockClear();
+  });
+  it("should replace compare function", () => {
+    const AMemo = memo(A, () => false);
+    const B = transformProps(AMemo, (it) => it, {
+      hooks: [
+        {
+          type: "first-memo",
+          value: () => null,
+        },
+      ],
+    });
+
+    let rerender: null | (() => void) = null;
+    const C = vi.fn(() => {
+      rerender = useRerender();
+      return createElement(B);
+    });
+
+    render(createElement(C));
+    expect(A).toHaveBeenCalledTimes(1);
+    expect(C).toHaveBeenCalledOnce();
+    expect(rerender).toBeTruthy();
+    act(() => {
+      rerender?.();
+    });
+    expect(C).toHaveBeenCalledTimes(2);
+    expect(A).toHaveBeenCalledTimes(1);
+  });
+});

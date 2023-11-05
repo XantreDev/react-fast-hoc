@@ -47,6 +47,7 @@ export type CreateHocComponentOptions = (
    * to you can easilty mutate and define new properties, and not change inital component
    */
   mimicToNewComponent?: null | MimicToNewComponentHandler;
+  hooks?: HocHook[]
 };
 ```
 
