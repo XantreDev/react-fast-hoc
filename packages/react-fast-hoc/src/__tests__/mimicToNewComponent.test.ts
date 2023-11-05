@@ -1,5 +1,5 @@
 import { assert, beforeEach, describe, expect, test } from "vitest";
-import { transformProps } from "..";
+import { MimicToNewComponentHandler, transformProps } from "..";
 
 const createComponent = () => () => null;
 
@@ -13,7 +13,7 @@ describe("mimic to new component test", () => {
   test("test addition", () => {
     const wrappedComponent = Object.assign(
       transformProps(Component, (props) => props, {
-        mimicToNewComponent: true,
+        mimicToNewComponent: new MimicToNewComponentHandler(),
       }),
       {
         bebe: "da",

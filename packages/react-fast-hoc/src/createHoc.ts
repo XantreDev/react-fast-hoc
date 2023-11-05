@@ -1,6 +1,6 @@
 import type { ComposeLeft, Fn } from "hotscript";
 import type { ComponentType } from "react";
-import { HocTransformer, MimicToNewComponentHandler } from "./handlers";
+import { HocTransformer } from "./handlers";
 import { wrapComponentIntoHoc, wrapPropsTransformer } from "./internals";
 import type {
   CreateHocNameOption,
@@ -57,10 +57,7 @@ export const createHoc = <
     params.resultTransformer,
     paramsToDisplayNameTransformer(params)
   );
-  const mimicToHandler =
-    params?.mimicToNewComponent ?? false
-      ? new MimicToNewComponentHandler()
-      : null;
+  const mimicToHandler = params?.mimicToNewComponent ?? null;
 
   return ((component: ComponentType<unknown>) =>
     wrapComponentIntoHoc(

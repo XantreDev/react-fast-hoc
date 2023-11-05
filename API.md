@@ -46,7 +46,7 @@ export type CreateHocComponentOptions = (
    * @description This feature has overhead in terms of using another proxy
    * to you can easilty mutate and define new properties, and not change inital component
    */
-  mimicToNewComponent?: boolean;
+  mimicToNewComponent?: null | MimicToNewComponentHandler;
 };
 ```
 
@@ -96,7 +96,7 @@ function createHoc<TPipeTransform, ComponentPropsExtends>(
   - `propsTransformer`: A function to transform the props of the wrapped component.
   - `resultTransformer`: A function to transform the rendered JSX of the wrapped component.
   - `displayNameTransform`: Property for displayName rewrite.
-  - `mimicToNewComponent`: enabled by default
+  - `mimicToNewComponent`: disabled by default
 
 ### Returns
 

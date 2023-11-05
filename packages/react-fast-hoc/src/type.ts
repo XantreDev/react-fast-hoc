@@ -1,5 +1,5 @@
 import type { Booleans, Call, ComposeLeft, Fn, Objects } from "hotscript";
-import type { SetOptional, Simplify, UnionToIntersection } from "type-fest";
+import type { Simplify } from "type-fest";
 import type {
   ComponentPropsWithRef,
   ComponentType,
@@ -9,6 +9,12 @@ import type {
   MemoExoticComponent,
   ReactNode,
 } from "react";
+import {
+  REACT_FORWARD_REF_TYPE,
+  REACT_LAZY_TYPE,
+  REACT_MEMO_TYPE,
+} from "./shared";
+import type { MimicToNewComponentHandler } from "./handlers";
 
 /**
  * type alias for the result of the transformProps function.
@@ -134,14 +140,50 @@ export type CreateHocNameOption =
           };
     };
 
+export type RealForwardRefComponentType<
+  TProps extends object,
+  IRef = unknown
+> = {
+  $$typeof: typeof REACT_FORWARD_REF_TYPE;
+  render: (props: TProps, ref: null | React.Ref<IRef>) => ReactNode;
+};
+
+export type RealMemoComponentType<TProps extends object, TRef = unknown> = {
+  $$typeof: typeof REACT_MEMO_TYPE;
+  compare: null | ((a: TProps, b: TProps) => boolean);
+  type: RealComponentType<TProps, TRef>;
+};
+
+export type RealLazyComponentType<TProps extends object, TRef = unknown> = {
+  $$typeof: typeof REACT_LAZY_TYPE;
+  _payload: {
+    _status: -1 | 0 | 1 | 2;
+    _result: unknown;
+  };
+  // returns component or throws promise
+  _init: (arg: unknown) => RealComponentType<TProps, TRef>;
+};
+
+export type RealComponentType<TProps extends object, TRef = unknown> =
+  | RealForwardRefComponentType<TProps, TRef>
+  | RealMemoComponentType<TProps, TRef>
+  | RealLazyComponentType<TProps, TRef>
+  | React.ComponentClass<TProps>
+  | React.FC<TProps>;
+
+export type HocHook = {
+  type: "first-memo";
+  value: (component: RealComponentType<unknown & object, unknown>) => {};
+};
 export type CreateHocSharedOptions = {
   /**
    * @deprecated I have not found a use case for this option
    * @description This feature has overhead in terms of using another proxy
-   * to you can easilty mutate and define new properties, and not change inital component
-   * @default false
+   * to you can easily mutate and define new properties, and not change initial component
+   * @default null
    */
-  mimicToNewComponent?: boolean;
+  mimicToNewComponent?: MimicToNewComponentHandler | null;
+  hooks?: HocHook[];
 };
 
 export type CreateHocComponentOptions = Simplify<

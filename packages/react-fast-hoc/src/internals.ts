@@ -1,6 +1,12 @@
 import React, { isValidElement, type ReactNode, type Ref } from "react";
 import type { HocTransformer, MimicToNewComponentHandler } from "./handlers";
 import { isClassComponent, toFunctional, type Get } from "./toFunctional";
+import { RealComponentType } from "./type";
+import {
+  REACT_FORWARD_REF_TYPE,
+  REACT_LAZY_TYPE,
+  REACT_MEMO_TYPE,
+} from "./shared";
 
 export const isRef = <T = unknown>(maybeRef: unknown): maybeRef is Ref<T> =>
   maybeRef === null ||
@@ -30,32 +36,6 @@ export const wrapPropsTransformer =
 
     return [resultProps, hasRef && isRef(resultRef) ? resultRef : ref] as const;
   };
-
-const REACT_MEMO_TYPE = Symbol.for("react.memo");
-const REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
-const REACT_LAZY_TYPE = Symbol.for("react.lazy");
-
-type RealComponentType<TProps extends object, IRef = unknown> =
-  | {
-      $$typeof: typeof REACT_FORWARD_REF_TYPE;
-      render: (props: TProps, ref: null | Ref<IRef>) => ReactNode;
-    }
-  | {
-      $$typeof: typeof REACT_MEMO_TYPE;
-      compare: null | ((a: TProps, b: TProps) => boolean);
-      type: RealComponentType<TProps, IRef>;
-    }
-  | {
-      $$typeof: typeof REACT_LAZY_TYPE;
-      _payload: {
-        _status: -1 | 0 | 1 | 2;
-        _result: unknown;
-      };
-      // returns component or throws promise
-      _init: (arg: unknown) => React.ComponentType<unknown>;
-    }
-  | React.ComponentClass<TProps>
-  | React.FC<TProps>;
 
 type ReactFunctionalComponentType<
   TProps extends object,
