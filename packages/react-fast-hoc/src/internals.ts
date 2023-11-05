@@ -1,6 +1,18 @@
-import React, { isValidElement, type ReactNode, type Ref } from "react";
+import React, { type Ref } from "react";
 import type { HocTransformer, MimicToNewComponentHandler } from "./handlers";
 import { isClassComponent, toFunctional, type Get } from "./toFunctional";
+import {
+  HocHook,
+  PropsAreEqual,
+  RealComponentType,
+  RealForwardRefComponentType,
+  RealLazyComponentType,
+} from "./type";
+import {
+  REACT_FORWARD_REF_TYPE,
+  REACT_LAZY_TYPE,
+  REACT_MEMO_TYPE,
+} from "./shared";
 
 export const isRef = <T = unknown>(maybeRef: unknown): maybeRef is Ref<T> =>
   maybeRef === null ||
@@ -31,32 +43,6 @@ export const wrapPropsTransformer =
     return [resultProps, hasRef && isRef(resultRef) ? resultRef : ref] as const;
   };
 
-const REACT_MEMO_TYPE = Symbol.for("react.memo");
-const REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
-const REACT_LAZY_TYPE = Symbol.for("react.lazy");
-
-type RealComponentType<TProps extends object, IRef = unknown> =
-  | {
-      $$typeof: typeof REACT_FORWARD_REF_TYPE;
-      render: (props: TProps, ref: null | Ref<IRef>) => ReactNode;
-    }
-  | {
-      $$typeof: typeof REACT_MEMO_TYPE;
-      compare: null | ((a: TProps, b: TProps) => boolean);
-      type: RealComponentType<TProps, IRef>;
-    }
-  | {
-      $$typeof: typeof REACT_LAZY_TYPE;
-      _payload: {
-        _status: -1 | 0 | 1 | 2;
-        _result: unknown;
-      };
-      // returns component or throws promise
-      _init: (arg: unknown) => React.ComponentType<unknown>;
-    }
-  | React.ComponentClass<TProps>
-  | React.FC<TProps>;
-
 type ReactFunctionalComponentType<
   TProps extends object,
   IRef = unknown
@@ -65,18 +51,16 @@ type ReactFunctionalComponentType<
   { $$typeof: typeof REACT_FORWARD_REF_TYPE } | React.FC<TProps>
 >;
 
-type ForwardRefComponent<TProps extends object> = Extract<
-  ReactFunctionalComponentType<TProps>,
-  { $$typeof: typeof REACT_FORWARD_REF_TYPE }
->;
-type RegularFunctionComponent<TProps extends object> = Exclude<
-  ReactFunctionalComponentType<TProps>,
-  ForwardRefComponent<TProps>
+type RegularFunctionComponent<TProps extends object, TRef = unknown> = Exclude<
+  ReactFunctionalComponentType<TProps, TRef>,
+  RealForwardRefComponentType<TProps, TRef>
 >;
 const wrapFCWithForwardRefOrPlain = <TProps extends object>(
   Component: ReactFunctionalComponentType<TProps>,
   handler: HocTransformer
-): ForwardRefComponent<TProps> | ReactFunctionalComponentType<TProps> => {
+):
+  | RealForwardRefComponentType<TProps>
+  | ReactFunctionalComponentType<TProps> => {
   if (
     "$$typeof" in Component &&
     Component["$$typeof"] === REACT_FORWARD_REF_TYPE
@@ -84,10 +68,10 @@ const wrapFCWithForwardRefOrPlain = <TProps extends object>(
     return {
       $$typeof: REACT_FORWARD_REF_TYPE,
       render: new Proxy(
-        (Component as ForwardRefComponent<TProps>).render,
+        (Component as RealForwardRefComponentType<TProps>).render,
         handler
       ),
-    } as ForwardRefComponent<TProps>;
+    } as RealForwardRefComponentType<TProps>;
   }
   return new Proxy(
     Component as Function,
@@ -96,6 +80,27 @@ const wrapFCWithForwardRefOrPlain = <TProps extends object>(
 };
 
 // I don't know why but typescript is not helpful at all
+const wrapLazyInit = <TProps extends object>(
+  lazy: RealLazyComponentType<TProps>,
+  handler: HocTransformer,
+  mimicToNewComponentHandler: null | MimicToNewComponentHandler,
+  hooks: null | Set<HocHook>
+) => {
+  let result: RealComponentType<TProps>;
+
+  return (arg: unknown) => {
+    const initRes = lazy._init(arg);
+    if (!result) {
+      result = wrapComponentIntoHoc(
+        initRes,
+        handler,
+        mimicToNewComponentHandler,
+        hooks
+      ) as RealComponentType<any>;
+    }
+    return result;
+  };
+};
 
 // Component can be memo class component or wrapped in hoc functional component
 /**
@@ -109,13 +114,9 @@ const wrapFCWithForwardRefOrPlain = <TProps extends object>(
 export const wrapComponentIntoHoc = <TProps extends object>(
   Component: RealComponentType<TProps>,
   handler: HocTransformer,
-  mimicToNewComponentHandler: null | MimicToNewComponentHandler
+  mimicToNewComponentHandler: null | MimicToNewComponentHandler,
+  hooks: null | Set<HocHook>
 ): unknown => {
-  // should use isValidElementType
-  // if (process.env.NODE_ENV === "development" && !isValidElement(Component)) {
-  //   console.warn("react-fast-hoc: passed incorrect component for transform");
-  //   return Component;
-  // }
   // this case assumes that it's ClassComponent
   if (isClassComponent(Component)) {
     return wrapFCWithForwardRefOrPlain(
@@ -125,10 +126,20 @@ export const wrapComponentIntoHoc = <TProps extends object>(
   }
 
   if ("$$typeof" in Component && Component["$$typeof"] === REACT_MEMO_TYPE) {
+    let compare = Component.compare as PropsAreEqual<object> | null;
+    if (hooks) {
+      for (const hook of hooks) {
+        if (hook.type === "first-memo") {
+          compare = hook.value(compare);
+
+          hooks.delete(hook);
+        }
+      }
+    }
     return {
       $$typeof: REACT_MEMO_TYPE,
-      type: wrapComponentIntoHoc(Component.type, handler, null),
-      compare: Component.compare,
+      type: wrapComponentIntoHoc(Component.type, handler, null, hooks),
+      compare,
     };
   }
 
@@ -143,30 +154,34 @@ export const wrapComponentIntoHoc = <TProps extends object>(
     };
   }
   if ("$$typeof" in Component && Component["$$typeof"] === REACT_LAZY_TYPE) {
-    let result: RealComponentType<any>;
     return {
       $$typeof: REACT_LAZY_TYPE,
       _payload: Component._payload,
-      _init: (arg: unknown) => {
-        const initRes = Component._init(arg);
-        if (!result) {
-          result = wrapComponentIntoHoc(
-            initRes,
-            handler,
-            null
-          ) as RealComponentType<any>;
-        }
-        return result;
-      },
+      _init: wrapLazyInit(
+        Component,
+        handler,
+        mimicToNewComponentHandler,
+        hooks
+      ),
     } as RealComponentType<any>;
   }
 
-  const proxied = new Proxy(Component, handler);
+  if (typeof Component === "function") {
+    const proxied = new Proxy(Component, handler);
 
-  return mimicToNewComponentHandler
-    ? (new Proxy(
-        proxied,
-        mimicToNewComponentHandler
-      ) as RealComponentType<TProps>)
-    : proxied;
+    return mimicToNewComponentHandler
+      ? (new Proxy(
+          proxied,
+          mimicToNewComponentHandler
+        ) as RealComponentType<TProps>)
+      : proxied;
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    console.warn(
+      "react-fast-hoc: unknown component type, please submit issue",
+      Component
+    );
+  }
+  return Component;
 };
