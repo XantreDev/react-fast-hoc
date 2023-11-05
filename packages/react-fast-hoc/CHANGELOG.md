@@ -1,5 +1,12 @@
 # react-fast-hoc
 
+## 0.4.0
+
+### Minor Changes
+
+- 19d2da8: Added hooks to change behavious of hoks transform
+- 13d9d4b: `mimicToNewComponent` now receives null or MimicToNewComponentHandler instance. Reduces bundle size
+
 ## 0.3.2
 
 ### Patch Changes
